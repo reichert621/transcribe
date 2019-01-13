@@ -38,7 +38,8 @@ function startTranscription(fileName) {
 
 function listTranscriptionJobs(fileName) {
   const params = {
-    JobNameContains: fileName
+    JobNameContains: fileName,
+    MaxResults: 100
   };
 
   return transcribeService.listTranscriptionJobs(params).promise();

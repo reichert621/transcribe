@@ -30,6 +30,7 @@ api.get('/transcription-statuses', (req, res) => {
 
   return listTranscriptionJobs(fileName)
     .then(results => {
+      console.log('List transcription results:', results);
       // TODO: do we need the `NextToken` field for anything?
       const { NextToken: nextToken, TranscriptionJobSummaries: jobs } = results;
 
@@ -47,6 +48,7 @@ api.get('/transcription-statuses', (req, res) => {
       });
     })
     .catch(err => {
+      console.log('List transcription error:', err);
       // TODO: better error handling
       res.status(500).json({ error: err.message });
     });

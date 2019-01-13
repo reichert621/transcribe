@@ -125,6 +125,7 @@
     "lint:client": "npm run tslint:client && npm run eslint:client",
     "lint:api": "./node_modules/.bin/eslint 'server/**/*.js'",
     "lint": "./node_modules/.bin/eslint",
+    "db:migration": "./node_modules/.bin/knex migrate:make --knexfile server/db/knexfile.js",
     "db:migrate": "./node_modules/.bin/knex migrate:latest --knexfile server/db/knexfile.js",
     "db:seed": "./node_modules/.bin/knex seed:run --knexfile server/db/knexfile.js",
     "db:rollback": "./node_modules/.bin/knex migrate:rollback --knexfile server/db/knexfile.js",

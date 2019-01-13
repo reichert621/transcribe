@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, Link } from 'react-router-dom';
 import Dropzone from 'react-dropzone';
 import {
   Recording,
   TranscriptionJob,
   fetchRecordings,
+  createTranscriptionJob,
   fetchTranscriptionJobStatuses,
   getSignedUrl,
   uploadToS3
@@ -55,6 +56,10 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
         return uploadToS3(url, file);
       })
       .then(res => {
+        console.log('Creating transcription job!', res);
+        return createTranscriptionJob(fileName);
+      })
+      .then(res => {
         console.log('Upload results:', res);
         this.setState({ isUploading: false });
       })
@@ -69,7 +74,7 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
 
     // TODO: improve design (obviously) and split out components as they grow
     return (
-      <Flex p={4} flexDirection="column">
+      <Box p={4}>
         <Box my={4}>
           <Header>Dashboard</Header>
 
@@ -99,7 +104,9 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
               const { name, status, createdAt } = job;
               return (
                 <Box key={key} mb={4}>
-                  <Box p={1}>Name: {name}</Box>
+                  <Box p={1}>
+                    <Link to={`/recording/${1}`}>Name: {name}</Link>
+                  </Box>
                   <Box p={1}>Status: {status}</Box>
                   <Box p={1}>Created: {createdAt}</Box>
                 </Box>
@@ -107,7 +114,7 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
             })}
           </Box>
         </Box>
-      </Flex>
+      </Box>
     );
   }
 }
