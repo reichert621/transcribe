@@ -1,16 +1,18 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { Box } from './Common';
-import { fetchRecording } from '../helpers/recordings';
+import { Box, Header } from './Common';
+import { Recording, fetchRecording } from '../helpers/recordings';
 
 type RecordingProps = RouteComponentProps<{ id: number }> & {};
-type RecordingState = {};
+type RecordingState = {
+  recording: Recording;
+};
 
-class Recording extends React.Component<RecordingProps, RecordingState> {
+class RecordingPage extends React.Component<RecordingProps, RecordingState> {
   constructor(props: RecordingProps) {
     super(props);
 
-    this.state = {};
+    this.state = { recording: null };
   }
 
   componentDidMount() {
@@ -27,10 +29,25 @@ class Recording extends React.Component<RecordingProps, RecordingState> {
   }
 
   render() {
-    console.log(this.state);
+    const { recording } = this.state;
 
-    return <Box>Recording page!</Box>;
+    if (!recording) {
+      // TODO: render loading
+      return null;
+    }
+
+    const { name, transcription } = recording;
+
+    return (
+      <Box p={4}>
+        <Header my={4}>{name}</Header>
+
+        <Box>
+          <pre>{JSON.stringify(transcription, null, 2)}</pre>
+        </Box>
+      </Box>
+    );
   }
 }
 
-export default Recording;
+export default RecordingPage;

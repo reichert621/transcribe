@@ -3,8 +3,9 @@ import * as request from 'superagent';
 export type Recording = {
   id: number;
   name: string;
-  timestamp: any;
-  transcription: any;
+  status?: 'in_progress' | 'error' | 'finished';
+  timestamp?: any;
+  transcription?: any;
 };
 
 export type TranscriptionJob = {
@@ -53,11 +54,12 @@ export const createTranscriptionJob = (
     .then(res => res.body);
 };
 
-export const fetchRecording = (recordingId: number) => {
+export const fetchRecording = (recordingId: number): Promise<Recording> => {
   // return request.get(`/api/recordings/${recordingId}`).then(res => res.body);
-  const response = {
+  const response: Recording = {
+    id: 2,
     name: '20190101-recording.mp3',
-    status: 'COMPLETE',
+    status: 'finished',
     transcription: {
       fullText: 'this is a fake transcription',
       textByTime: [
