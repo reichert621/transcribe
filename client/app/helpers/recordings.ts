@@ -3,7 +3,7 @@ import * as request from 'superagent';
 export type Recording = {
   id: number;
   name: string;
-  status?: 'in_progress' | 'error' | 'finished';
+  status?: 'IN_PROGRESS' | 'FAILED' | 'COMPLETED';
   timestamp?: any;
   transcription?: Transcription;
 };
@@ -68,7 +68,7 @@ export const fetchRecording = (recordingId: number): Promise<Recording> => {
   const response: Recording = {
     id: 2,
     name: '20190101-recording.mp3',
-    status: 'finished',
+    status: 'COMPLETED',
     transcription: {
       fullText: 'this is a fake transcription',
       textByTime: [
