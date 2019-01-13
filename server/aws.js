@@ -1,7 +1,8 @@
-// Load the SDK and UUID
 const AWS = require('aws-sdk');
 const uuid = require('node-uuid');
 const fs = require('fs');
+
+const { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY } = process.env;
 
 // Create an S3 client
 const s3 = new AWS.S3({ region: 'us-west-2' });
@@ -10,39 +11,18 @@ const s3 = new AWS.S3({ region: 'us-west-2' });
 const bucketName = 'audio-search-kam';
 const transcribeService = new AWS.TranscribeService({
   apiVersion: '2017-10-26',
-  region: 'us-west-2'
+  region: 'us-west-2',
+  accessKeyId: AWS_ACCESS_KEY_ID,
+  secretAccessKey: AWS_SECRET_ACCESS_KEY
 });
 
-function uploadVideo(filePath) {
-  fs.readFile(filePath, (err, data) => {
-    if (err) {
-      throw err;
-    }
-    const base64data = new Buffer(data, 'binary');
-
-    s3.putObject(
-      {
-        Bucket: bucketName,
-        Key: filePath,
-        Body: base64data
-      },
-      (err, resp) => {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log(
-            `Successfully uploaded data to ${bucketName}/${filePath}`
-          );
-        }
-      }
-    );
-  });
-}
+const getFileUri = fileName => {
+  return `https://s3-us-west-2.amazonaws.com/${bucketName}/${fileName}`;
+};
 
 function startTranscription(fileUri, fileName) {
   const fileSplit = fileUri.split('.');
   const mediaFormat = fileSplit[fileSplit.length - 1];
-  console.log('File URI:', fileUri);
   const jobName = `${uuid.v4()}-${fileName}`;
   const params = {
     LanguageCode: 'en-US',
@@ -60,35 +40,42 @@ function startTranscription(fileUri, fileName) {
       // ShowSpeakerLabels: true,
     }
   };
+  console.log('Params:', params);
 
-  transcribeService.startTranscriptionJob(params, (err, data) => {
-    if (err) {
-      // an error occurred
-      console.log(err, err.stack);
-    } else {
-      // successful response
-      console.log(data);
-    }
-  });
-
-  return { jobName };
+  return transcribeService.startTranscriptionJob(params).promise();
+  // return { jobName };
 }
 
-function getTranscription(fileName, callback) {
-  const bucket = 'finished-transcription';
+function listTranscriptionJobs(fileName) {
   const params = {
-    Bucket: bucket,
-    Key: `${fileName}.json`
+    JobNameContains: fileName
   };
 
-  s3.getObject(params)
-    .on('success', response => {
-      callback(JSON.parse(response.data.Body));
-    })
-    .on('error', error => {
-      console.log(error);
-    })
-    .send();
+  return transcribeService.listTranscriptionJobs(params).promise();
+}
+
+function getTranscription(fileName) {
+  const bucket = 'finished-transcription';
+  const params = { Bucket: bucket, Key: `${fileName}.json` };
+
+  return new Promise((resolve, reject) => {
+    s3.getObject(params)
+      .on('success', response => {
+        const json = JSON.parse(response.data.Body);
+
+        resolve(json);
+      })
+      .on('error', error => {
+        reject(error);
+      })
+      .send();
+  });
+
+  // TODO: promisify!
+  // return s3
+  //   .getObject(params)
+  //   .promise()
+  //   .then(res => JSON.parse(res.data.Body));
 }
 
 function sign(filename, contentType) {
@@ -108,6 +95,11 @@ function sign(filename, contentType) {
       }
     });
   });
+
+  // TODO: promisify!
+  // return s3
+  //   .getSignedUrl('putObject', params)
+  //   .promise()
 }
 
 module.exports = {

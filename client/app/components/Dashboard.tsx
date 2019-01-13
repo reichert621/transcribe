@@ -39,6 +39,7 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
 
     return getSignedUrl(fileName, contentType)
       .then(url => {
+        console.log('Data:', { fileName, url, file });
         return uploadToS3(url, file);
       })
       .then(res => {
