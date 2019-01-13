@@ -5,6 +5,7 @@ import {
   Recording,
   TranscriptionJob,
   fetchRecordings,
+  createTranscriptionJob,
   fetchTranscriptionJobStatuses,
   getSignedUrl,
   uploadToS3
@@ -53,6 +54,9 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
       .then(url => {
         console.log('Data:', { fileName, url, file });
         return uploadToS3(url, file);
+      })
+      .then(() => {
+        return createTranscriptionJob(fileName);
       })
       .then(res => {
         console.log('Upload results:', res);

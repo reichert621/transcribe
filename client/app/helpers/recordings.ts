@@ -42,3 +42,12 @@ export const fetchTranscriptionJobStatuses = (
     .query({ fileName })
     .then(res => res.body.jobs);
 };
+
+export const createTranscriptionJob = (
+  fileName: string
+): Promise<Recording> => {
+  return request
+    .post('/api/recordings')
+    .send({ fileName })
+    .then(res => res.body);
+};
