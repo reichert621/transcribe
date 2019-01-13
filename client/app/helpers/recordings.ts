@@ -43,6 +43,7 @@ export const fetchTranscriptionJobStatuses = (
     .then(res => res.body.jobs);
 };
 
+// TODO: more consistent naming (RESTful)
 export const createTranscriptionJob = (
   fileName: string
 ): Promise<Recording> => {
@@ -50,4 +51,21 @@ export const createTranscriptionJob = (
     .post('/api/recordings')
     .send({ fileName })
     .then(res => res.body);
+};
+
+export const fetchRecording = (recordingId: number) => {
+  // return request.get(`/api/recordings/${recordingId}`).then(res => res.body);
+  const response = {
+    name: '20190101-recording.mp3',
+    status: 'COMPLETE',
+    transcription: {
+      fullText: 'this is a fake transcription',
+      textByTime: [
+        { startTime: 0, endTime: 2, text: 'this is a' },
+        { startTime: 2, endTime: 3, text: 'fake transcription' }
+      ]
+    }
+  };
+
+  return Promise.resolve(response);
 };

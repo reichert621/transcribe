@@ -55,7 +55,8 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
         console.log('Data:', { fileName, url, file });
         return uploadToS3(url, file);
       })
-      .then(() => {
+      .then(res => {
+        console.log('Creating transcription job!', res);
         return createTranscriptionJob(fileName);
       })
       .then(res => {
