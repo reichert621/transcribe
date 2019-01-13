@@ -36,6 +36,14 @@ function startTranscription(fileName) {
   return transcribeService.startTranscriptionJob(params).promise();
 }
 
+function listTranscriptionJobs(fileName) {
+  const params = {
+    JobNameContains: fileName
+  };
+
+  return transcribeService.listTranscriptionJobs(params).promise();
+}
+
 function getTranscription(fileName) {
   const bucket = 'finished-transcription';
   const params = { Bucket: bucket, Key: `${fileName}.json` };
@@ -66,7 +74,6 @@ function sign(filename, contentType) {
     Key: filename,
     Expires: 60,
     ContentType: contentType
-
   };
 
   return new Promise((resolve, reject) => {
@@ -87,5 +94,6 @@ function sign(filename, contentType) {
 
 module.exports = {
   sign,
+  listTranscriptionJobs,
   startTranscription
 };

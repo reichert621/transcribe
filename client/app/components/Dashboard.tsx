@@ -3,7 +3,9 @@ import { RouteComponentProps } from 'react-router-dom';
 import Dropzone from 'react-dropzone';
 import {
   Recording,
+  TranscriptionJob,
   fetchRecordings,
+  fetchTranscriptionJobStatuses,
   getSignedUrl,
   uploadToS3
 } from '../helpers/recordings';
@@ -13,19 +15,27 @@ type DashboardProps = RouteComponentProps<{}> & {};
 type DashboardState = {
   recordings: Recording[];
   files: File[];
+  jobs: TranscriptionJob[];
+  isUploading: boolean;
 };
 
 class Dashboard extends React.Component<DashboardProps, DashboardState> {
   constructor(props: DashboardProps) {
     super(props);
 
-    this.state = { recordings: [], files: [] };
+    this.state = {
+      recordings: [],
+      files: [],
+      jobs: [],
+      isUploading: false
+    };
   }
 
   componentDidMount() {
-    return fetchRecordings()
-      .then(recordings => {
-        console.log('Recording results:', recordings);
+    return fetchTranscriptionJobStatuses()
+      .then(jobs => {
+        console.log('Job statuses:', jobs);
+        this.setState({ jobs });
       })
       .catch(err => {
         console.log('Error fetching recordings!', err);
@@ -33,6 +43,8 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
   }
 
   handleFileDrop = (files: File[]) => {
+    this.setState({ isUploading: true });
+
     const [file] = files;
     const fileName = `${+new Date()}-${file.name}`;
     const contentType = file.type;
@@ -44,28 +56,57 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
       })
       .then(res => {
         console.log('Upload results:', res);
+        this.setState({ isUploading: false });
       })
-      .catch(err => console.log('Oh shit!', err));
+      .catch(err => {
+        console.log('Oh shit!', err);
+        this.setState({ isUploading: false });
+      });
   };
 
   render() {
-    return (
-      <Flex
-        p={4}
-        alignItems="center"
-        justifyContent="center"
-        flexDirection="column"
-      >
-        <Header>Dashboard</Header>
+    const { jobs = [], isUploading } = this.state;
 
-        <Dropzone onDrop={this.handleFileDrop}>
-          {({ getRootProps, getInputProps }) => (
-            <Box {...getRootProps()} mt={4}>
-              <input {...getInputProps()} />
-              <Text>Drop files here, or click to select files</Text>
-            </Box>
-          )}
-        </Dropzone>
+    // TODO: improve design (obviously) and split out components as they grow
+    return (
+      <Flex p={4} flexDirection="column">
+        <Box my={4}>
+          <Header>Dashboard</Header>
+
+          <Dropzone onDrop={this.handleFileDrop}>
+            {({ getRootProps, getInputProps, isDragActive }) => (
+              <Box {...getRootProps()} mt={4} style={{ cursor: 'pointer' }}>
+                <input {...getInputProps()} />
+
+                {isUploading ? (
+                  <Text>Uploading...</Text>
+                ) : (
+                  <Text>
+                    Try dropping some files here, or click to select files to
+                    upload.
+                  </Text>
+                )}
+              </Box>
+            )}
+          </Dropzone>
+        </Box>
+
+        <Box my={4}>
+          <Header mb={2}>Jobs</Header>
+
+          <Box>
+            {jobs.map((job, key) => {
+              const { name, status, createdAt } = job;
+              return (
+                <Box key={key} mb={4}>
+                  <Box p={1}>Name: {name}</Box>
+                  <Box p={1}>Status: {status}</Box>
+                  <Box p={1}>Created: {createdAt}</Box>
+                </Box>
+              );
+            })}
+          </Box>
+        </Box>
       </Flex>
     );
   }
