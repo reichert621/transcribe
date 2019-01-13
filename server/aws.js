@@ -28,7 +28,7 @@ function startTranscription(fileName) {
       MediaFileUri: fileUri
     },
     MediaFormat: mediaFormat,
-    TranscriptionJobName: fileName + +new Date(),
+    TranscriptionJobName: fileName,
     MediaSampleRateHertz: 44100,
     OutputBucketName: finishedTranscriptionBucket
   };
