@@ -10,6 +10,8 @@ const api = Router();
 api.get('/ping', (req, res) => res.json({ message: 'pong' }));
 
 api.get('/recordings', recordings.fetch);
+api.post('/recordings', recordings.create);
+
 api.get('/signed-url', (req, res) => {
   const { fileName, contentType } = req.query;
 

@@ -1,14 +1,14 @@
 const AWS = require('aws-sdk');
-const uuid = require('node-uuid');
-const fs = require('fs');
 
 const { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY } = process.env;
 
 // Create an S3 client
 const s3 = new AWS.S3({ region: 'us-west-2' });
 
-// Create a bucket and upload something into it
 const bucketName = 'audio-search-kam';
+const finishedTranscriptionBucket = 'finished-transcription';
+const awsPath = 'https://s3-us-west-2.amazonaws.com/';
+
 const transcribeService = new AWS.TranscribeService({
   apiVersion: '2017-10-26',
   region: 'us-west-2',
@@ -16,14 +16,11 @@ const transcribeService = new AWS.TranscribeService({
   secretAccessKey: AWS_SECRET_ACCESS_KEY
 });
 
-const getFileUri = fileName => {
-  return `https://s3-us-west-2.amazonaws.com/${bucketName}/${fileName}`;
-};
-
-function startTranscription(fileUri, fileName) {
-  const fileSplit = fileUri.split('.');
+// fileUri format: 1547344263217-podcast-snippet.mp3
+function startTranscription(fileName) {
+  const fileUri = `${awsPath + bucketName}/${fileName}`;
+  const fileSplit = fileName.split('.');
   const mediaFormat = fileSplit[fileSplit.length - 1];
-  const jobName = `${uuid.v4()}-${fileName}`;
   const params = {
     LanguageCode: 'en-US',
     Media: {
@@ -31,19 +28,12 @@ function startTranscription(fileUri, fileName) {
       MediaFileUri: fileUri
     },
     MediaFormat: mediaFormat,
-    TranscriptionJobName: jobName,
+    TranscriptionJobName: fileName,
     MediaSampleRateHertz: 44100,
-    OutputBucketName: 'finished-transcription',
-    Settings: {
-      // ChannelIdentification: true,
-      // MaxSpeakerLabels: 0,
-      // ShowSpeakerLabels: true,
-    }
+    OutputBucketName: finishedTranscriptionBucket
   };
-  console.log('Params:', params);
 
   return transcribeService.startTranscriptionJob(params).promise();
-  // return { jobName };
 }
 
 function listTranscriptionJobs(fileName) {
@@ -82,7 +72,7 @@ function sign(filename, contentType) {
   const params = {
     Bucket: bucketName,
     Key: filename,
-    Expires: 60000,
+    Expires: 60,
     ContentType: contentType
   };
 
@@ -103,6 +93,7 @@ function sign(filename, contentType) {
 }
 
 module.exports = {
+  sign,
   listTranscriptionJobs,
-  sign
+  startTranscription
 };
