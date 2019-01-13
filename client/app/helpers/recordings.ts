@@ -5,7 +5,16 @@ export type Recording = {
   name: string;
   status?: 'in_progress' | 'error' | 'finished';
   timestamp?: any;
-  transcription?: any;
+  transcription?: Transcription;
+};
+
+export type Transcription = {
+  fullText: string;
+  textByTime: {
+    startTime: number;
+    endTime?: number;
+    text: string;
+  }[];
 };
 
 export type TranscriptionJob = {

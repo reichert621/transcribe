@@ -1,18 +1,19 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { Box, Header } from './Common';
+import { Box, Header, Input } from './Common';
 import { Recording, fetchRecording } from '../helpers/recordings';
 
 type RecordingProps = RouteComponentProps<{ id: number }> & {};
 type RecordingState = {
   recording: Recording;
+  query?: string;
 };
 
 class RecordingPage extends React.Component<RecordingProps, RecordingState> {
   constructor(props: RecordingProps) {
     super(props);
 
-    this.state = { recording: null };
+    this.state = { recording: null, query: '' };
   }
 
   componentDidMount() {
@@ -29,7 +30,7 @@ class RecordingPage extends React.Component<RecordingProps, RecordingState> {
   }
 
   render() {
-    const { recording } = this.state;
+    const { recording, query } = this.state;
 
     if (!recording) {
       // TODO: render loading
@@ -37,13 +38,43 @@ class RecordingPage extends React.Component<RecordingProps, RecordingState> {
     }
 
     const { name, transcription } = recording;
+    const { fullText, textByTime } = transcription;
 
     return (
       <Box p={4}>
         <Header my={4}>{name}</Header>
 
         <Box>
-          <pre>{JSON.stringify(transcription, null, 2)}</pre>
+          <Box>Full text: {fullText}</Box>
+
+          <Header my={4}>Search</Header>
+
+          <Input
+            mb={2}
+            p={2}
+            type="text"
+            placeholder="Search"
+            value={query}
+            onChange={(e: React.FormEvent<HTMLInputElement>) =>
+              this.setState({ query: e.currentTarget.value })
+            }
+          />
+
+          {textByTime
+            .filter(({ text }) => {
+              return text && text.length && text.includes(query);
+            })
+            .map(({ text, startTime }, key) => {
+              return (
+                <Box key={key}>
+                  {startTime} - {text}
+                </Box>
+              );
+            })}
+
+          <Box mt={80}>
+            <pre>{JSON.stringify(transcription, null, 2)}</pre>
+          </Box>
         </Box>
       </Box>
     );

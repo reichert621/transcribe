@@ -38,3 +38,10 @@ export const Header = styled(Text)`
   font-size: 32px;
   font-weight: 500;
 `;
+
+export const Input = styled.input`
+  ${space}
+  ${width}
+  ${fontSize}
+  ${borders}
+`;
