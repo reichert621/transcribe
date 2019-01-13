@@ -2,3 +2,4 @@ node_modules
 build
 target/
 .DS_Store
+.idea/

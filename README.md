@@ -35,6 +35,8 @@ For reference, my local environment variables look like this in my `~/.bash_prof
   export TRANSCRIBE_DB_NAME='transcribe_db' # this should match the db you created above
   export TRANSCRIBE_DB_USER=''
   export TRANSCRIBE_DB_PW=''
+  export AWS_ACCESS_KEY_ID=''
+  export AWS_SECRET_ACCESS_KEY=''
 ```
 
 ### Run the app
