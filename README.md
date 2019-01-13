@@ -5,11 +5,11 @@
 - Install **Node v8.x** and **npm v5.x** if you haven't already ([nvm](https://github.com/creationix/nvm) or [n](https://github.com/tj/n) are create tools for this)
 - Next, install the dependencies from `package.json` with
   ```
-  $ npm install
+  npm install
   ```
 - To keep things easy, install a few global dependencies:
   ```
-  $ npm install -g webpack knex
+  npm install -g webpack knex
   ```
 
 ### Set up a local Postgres database
@@ -42,9 +42,9 @@ For reference, my local environment variables look like this in my `~/.bash_prof
 Migrate the database, build the client, and run the server:
 
 ```
-$ npm run db:migrate
-$ npm run build
-$ npm start
+npm run db:migrate
+npm run build
+npm start
 ```
 
 Go to `localhost:8000` (or whatever `$PORT` you set) to check that the app is running.
@@ -54,7 +54,7 @@ Go to `localhost:8000` (or whatever `$PORT` you set) to check that the app is ru
 To simply start the server, run:
 
 ```
-$ npm run dev
+npm run dev
 ```
 
 This will serve the contents of the `client/build` directory, which are built with Webpack.
@@ -62,7 +62,7 @@ This will serve the contents of the `client/build` directory, which are built wi
 To run Webpack in `--watch` mode, run:
 
 ```
-$ npm run watch
+npm run watch
 ```
 
 And that should be it! Happy hacking 🤓
