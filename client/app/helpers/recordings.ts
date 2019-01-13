@@ -7,6 +7,12 @@ export type Recording = {
   transcription: any;
 };
 
+export type TranscriptionJob = {
+  name: string;
+  createdAt: any;
+  status: 'IN_PROGRESS' | 'FAILED' | 'COMPLETED';
+};
+
 export const fetchRecordings = (): Promise<Recording[]> => {
   return request.get('/api/recordings').then(res => res.body.recordings);
 };
@@ -26,4 +32,13 @@ export const uploadToS3 = (s3Url: string, file: File) => {
     .put(s3Url)
     .set('Content-Type', file.type)
     .send(file);
+};
+
+export const fetchTranscriptionJobStatuses = (
+  fileName?: string
+): Promise<TranscriptionJob[]> => {
+  return request
+    .get('/api/transcription-statuses')
+    .query({ fileName })
+    .then(res => res.body.jobs);
 };

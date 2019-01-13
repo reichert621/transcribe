@@ -103,5 +103,6 @@ function sign(filename, contentType) {
 }
 
 module.exports = {
+  listTranscriptionJobs,
   sign
 };
