@@ -10,13 +10,14 @@ const api = Router();
 api.get('/ping', (req, res) => res.json({ message: 'pong' }));
 
 api.get('/recordings', recordings.fetch);
-api.get('/get-signed-url', (req, res) => {
-  const { fileName } = req.query;
-  return sign(fileName)
-    .then((signedUrl) => {
+api.get('/signed-url', (req, res) => {
+  const { fileName, contentType } = req.query;
+
+  return sign(fileName, contentType)
+    .then(signedUrl => {
       res.json({ signedUrl });
     })
-    .catch((error) => {
+    .catch(error => {
       res.json({ error });
     });
 });

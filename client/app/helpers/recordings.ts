@@ -11,14 +11,19 @@ export const fetchRecordings = (): Promise<Recording[]> => {
   return request.get('/api/recordings').then(res => res.body.recordings);
 };
 
-export const upload = (file: File) => {
-  // const data = file;
+export const getSignedUrl = (
+  fileName: string,
+  contentType: string
+): Promise<string> => {
+  return request
+    .get('/api/signed-url')
+    .query({ fileName, contentType })
+    .then(res => res.body.signedUrl);
+};
 
-  return (
-    request
-      .post('/api/upload')
-      // .set('Content-Type', 'application/octet-stream')
-      // .send(file);
-      .attach('recording', file)
-  );
+export const uploadToS3 = (s3Url: string, file: File) => {
+  return request
+    .put(s3Url)
+    .set('Content-Type', file.type)
+    .send(file);
 };

@@ -1,7 +1,12 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import Dropzone from 'react-dropzone';
-import { Recording, fetchRecordings, upload } from '../helpers/recordings';
+import {
+  Recording,
+  fetchRecordings,
+  getSignedUrl,
+  uploadToS3
+} from '../helpers/recordings';
 import { Flex, Box, Text, Header } from './Common';
 
 type DashboardProps = RouteComponentProps<{}> & {};
@@ -29,14 +34,17 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
 
   handleFileDrop = (files: File[]) => {
     const [file] = files;
+    const fileName = `${+new Date()}-${file.name}`;
+    const contentType = file.type;
 
-    return upload(file)
-      .then(res => {
-        console.log('Upload success:', res);
+    return getSignedUrl(fileName, contentType)
+      .then(url => {
+        return uploadToS3(url, file);
       })
-      .catch(err => {
-        console.log('Upload error:', err);
-      });
+      .then(res => {
+        console.log('Upload results:', res);
+      })
+      .catch(err => console.log('Oh shit!', err));
   };
 
   render() {
