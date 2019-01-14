@@ -44,43 +44,47 @@ api.get('/recordings/:id', isAuthenticated, (req, res) => {
 
 api.get('/recordings', isAuthenticated, async (req, res) => {
   // A fileName can be optionally included in the query params to filter jobs
-  const { fileName } = req.query;
-  const userId = req.user.id;
-  const currentRecordings = await Recording.fetch({ userId });
+  try {
+    const { fileName } = req.query;
+    const userId = req.user.id;
+    const currentRecordings = await Recording.fetch({ userId });
 
-  const inProgressJobs = currentRecordings
-    .filter(recording => recording.status === 'IN_PROGRESS')
-    .map(recording => listTranscriptionJobs(recording.name));
+    const inProgressJobs = currentRecordings
+      .filter(recording => recording.status === 'IN_PROGRESS')
+      .map(recording => listTranscriptionJobs(recording.name));
 
-  const transcriptionJobs = await Promise.all(inProgressJobs);
-  const completed = flatMap(transcriptionJobs, jobDetails => {
-    const job = jobDetails.TranscriptionJobSummaries[0];
-    const name = job.TranscriptionJobName;
-    if (job.TranscriptionJobStatus === 'COMPLETED') {
-      return getTranscription(name);
-    } else {
-      return null;
-    }
-  });
-
-  const transcriptions = await Promise.all(completed);
-  const rowsToUpdate = flatMap(transcriptions, trans => {
-    const parsed = parseTranscription(trans);
-    if (!parsed) {
-      return null;
-    }
-    const name = parsed.jobName;
-    console.log(name);
-    return Recording.updateByName(name, {
-      transcription: parsed,
-      status: 'COMPLETED'
+    const transcriptionJobs = await Promise.all(inProgressJobs);
+    const completed = flatMap(transcriptionJobs, jobDetails => {
+      const job = jobDetails.TranscriptionJobSummaries[0];
+      const name = job.TranscriptionJobName;
+      if (job.TranscriptionJobStatus === 'COMPLETED') {
+        return getTranscription(name);
+      } else {
+        return null;
+      }
     });
-  });
 
-  await Promise.all(rowsToUpdate);
+    const transcriptions = await Promise.all(completed);
+    const rowsToUpdate = flatMap(transcriptions, trans => {
+      const parsed = parseTranscription(trans);
+      if (!parsed) {
+        return null;
+      }
+      const name = parsed.jobName;
+      console.log(name);
+      return Recording.updateByName(name, {
+        transcription: parsed,
+        status: 'COMPLETED'
+      });
+    });
 
-  const recordings = await Recording.fetch({ userId });
-  res.json({ recordings });
+    await Promise.all(rowsToUpdate);
+
+    const recordings = await Recording.fetch({ userId });
+    res.json({ recordings });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 module.exports = api;
