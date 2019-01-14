@@ -31,6 +31,7 @@ class RecordingPage extends React.Component<RecordingProps, RecordingState> {
 
   render() {
     const { recording, query } = this.state;
+    console.log('recording!', recording);
 
     if (!recording) {
       // TODO: render loading
@@ -38,14 +39,14 @@ class RecordingPage extends React.Component<RecordingProps, RecordingState> {
     }
 
     const { name, transcription } = recording;
-    const { fullText, textByTime } = transcription;
+    const { transcript, textByTime = [] } = transcription;
 
     return (
       <Box p={4}>
         <Header my={4}>{name}</Header>
 
         <Box>
-          <Box>Full text: {fullText}</Box>
+          <Box>Full text: {transcript}</Box>
 
           <Header my={4}>Search</Header>
 
@@ -61,7 +62,11 @@ class RecordingPage extends React.Component<RecordingProps, RecordingState> {
 
           {textByTime
             .filter(({ text }) => {
-              return text && text.length && text.includes(query);
+              return (
+                text &&
+                text.length &&
+                text.toLowerCase().includes(query.toLowerCase())
+              );
             })
             .map(({ text, startTime }, key) => {
               return (

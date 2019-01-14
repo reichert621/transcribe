@@ -30,9 +30,16 @@ api.get('/signed-url', isAuthenticated, (req, res) => {
       res.json({ signedUrl });
     })
     .catch(error => {
-      res.status(500)
-        .json({ error });
+      res.status(500).json({ error });
     });
+});
+
+api.get('/recordings/:id', isAuthenticated, (req, res) => {
+  const { id } = req.params;
+
+  return Recording.findById(id)
+    .then(recording => res.json({ recording }))
+    .catch(err => res.json({ err }));
 });
 
 api.get('/recordings', isAuthenticated, async (req, res) => {
@@ -57,7 +64,7 @@ api.get('/recordings', isAuthenticated, async (req, res) => {
   });
 
   const transcriptions = await Promise.all(completed);
-  const rowsToUpdate = flatMap(transcriptions, (trans => {
+  const rowsToUpdate = flatMap(transcriptions, trans => {
     const parsed = parseTranscription(trans);
     if (!parsed) {
       return null;
@@ -68,7 +75,7 @@ api.get('/recordings', isAuthenticated, async (req, res) => {
       transcription: parsed,
       status: 'COMPLETED'
     });
-  }));
+  });
 
   await Promise.all(rowsToUpdate);
 

@@ -1,20 +1,18 @@
 import * as request from 'superagent';
 
+export type TranscriptionStatus = 'IN_PROGRESS' | 'FAILED' | 'COMPLETED';
+
 export type Recording = {
   id: number;
   name: string;
-  status?: 'IN_PROGRESS' | 'FAILED' | 'COMPLETED';
+  status?: TranscriptionStatus;
   timestamp?: any;
   transcription?: Transcription;
 };
 
 export type Transcription = {
-  fullText: string;
-  textByTime: {
-    startTime: number;
-    endTime?: number;
-    text: string;
-  }[];
+  transcript: string;
+  textByTime: { startTime: number; endTime?: number; text: string }[];
 };
 
 export const fetchRecordings = (): Promise<Recording[]> => {
@@ -58,19 +56,21 @@ export const createTranscriptionJob = (
 };
 
 export const fetchRecording = (recordingId: number): Promise<Recording> => {
-  // return request.get(`/api/recordings/${recordingId}`).then(res => res.body);
-  const response: Recording = {
-    id: 2,
-    name: '20190101-recording.mp3',
-    status: 'COMPLETED',
-    transcription: {
-      fullText: 'this is a fake transcription',
-      textByTime: [
-        { startTime: 0, endTime: 2, text: 'this is a' },
-        { startTime: 2, endTime: 3, text: 'fake transcription' }
-      ]
-    }
-  };
+  return request
+    .get(`/api/recordings/${recordingId}`)
+    .then(res => res.body.recording);
+  // const response: Recording = {
+  //   id: 2,
+  //   name: '20190101-recording.mp3',
+  //   status: 'COMPLETED',
+  //   transcription: {
+  //     fullText: 'this is a fake transcription',
+  //     textByTime: [
+  //       { startTime: 0, endTime: 2, text: 'this is a' },
+  //       { startTime: 2, endTime: 3, text: 'fake transcription' }
+  //     ]
+  //   }
+  // };
 
-  return Promise.resolve(response);
+  // return Promise.resolve(response);
 };

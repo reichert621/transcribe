@@ -20,6 +20,7 @@ export const Box = styled.div`
   ${color}
   ${borders}
   ${flex}
+  outline: 0;
 `;
 
 export const Flex = styled(Box)`
@@ -35,7 +36,7 @@ export const Text = styled(Box)`
 `;
 
 export const Header = styled(Text)`
-  font-size: 32px;
+  font-size: ${props => props.fontSize || '32px'};
   font-weight: 500;
 `;
 
