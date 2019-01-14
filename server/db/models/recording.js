@@ -6,7 +6,8 @@ const Recording = () => knex('recordings');
 const fetch = (where = {}) => {
   return Recording()
     .select()
-    .where(where);
+    .where(where)
+    .orderBy('timestamp', 'desc');
 };
 
 const findOne = (where = {}) => {
