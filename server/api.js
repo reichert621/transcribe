@@ -28,7 +28,7 @@ api.get('/signed-url', (req, res) => {
     });
 });
 
-api.get('/transcription-statuses', isAuthenticated, (req, res) => {
+api.get('/transcription-statuses', (req, res) => {
   // A fileName can be optionally included in the query params to filter jobs
   const { fileName } = req.query;
 

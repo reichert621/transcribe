@@ -42,6 +42,7 @@ module.exports = {
       exceptMethods: [],
     }],
     'max-len': ['warn', 100],
+    'function-paren-newline': 'warn',
     'no-nested-ternary': 'warn',
     'import/extensions': 'warn',
     'import/no-unresolved': 'warn',

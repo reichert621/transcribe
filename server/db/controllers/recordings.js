@@ -11,12 +11,12 @@ module.exports = {
 
   async create(req, res) {
     try {
-      const name = req.body.fileName;
-      const recording = await Recording.create({ name });
+      const { id: userId } = req.user;
+      const { fileName: name } = req.body;
+      const recording = await Recording.create({ name, userId });
       await startTranscription(name);
       res.json({ recording });
     } catch (err) {
-      console.log(err);
       handleError(res, err);
     }
   }
