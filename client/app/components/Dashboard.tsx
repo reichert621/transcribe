@@ -3,8 +3,6 @@ import { RouteComponentProps, Link } from 'react-router-dom';
 import Dropzone from 'react-dropzone';
 import {
   Recording,
-  TranscriptionJob,
-  fetchRecordings,
   createTranscriptionJob,
   fetchTranscriptionJobStatuses,
   getSignedUrl,
@@ -16,7 +14,6 @@ type DashboardProps = RouteComponentProps<{}> & {};
 type DashboardState = {
   recordings: Recording[];
   files: File[];
-  jobs: TranscriptionJob[];
   isUploading: boolean;
 };
 
@@ -27,16 +24,15 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
     this.state = {
       recordings: [],
       files: [],
-      jobs: [],
       isUploading: false
     };
   }
 
   componentDidMount() {
     return fetchTranscriptionJobStatuses()
-      .then(jobs => {
-        console.log('Job statuses:', jobs);
-        this.setState({ jobs });
+      .then(recordings => {
+        console.log('Job statuses:', recordings);
+        this.setState({ recordings });
       })
       .catch(err => {
         console.log('Error fetching recordings!', err);
@@ -72,7 +68,7 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
   };
 
   render() {
-    const { jobs = [], isUploading } = this.state;
+    const { recordings = [], isUploading } = this.state;
 
     // TODO: improve design (obviously) and split out components as they grow
     return (
@@ -99,18 +95,18 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
         </Box>
 
         <Box my={4}>
-          <Header mb={2}>Jobs</Header>
+          <Header mb={2}>Recordings</Header>
 
           <Box>
-            {jobs.map((job, key) => {
-              const { name, status, createdAt } = job;
+            {recordings.map((job, key) => {
+              const { name, status, timestamp } = job;
               return (
                 <Box key={key} mb={4}>
                   <Box p={1}>
                     <Link to={`/recording/${1}`}>Name: {name}</Link>
                   </Box>
                   <Box p={1}>Status: {status}</Box>
-                  <Box p={1}>Created: {createdAt}</Box>
+                  <Box p={1}>Created: {timestamp}</Box>
                 </Box>
               );
             })}

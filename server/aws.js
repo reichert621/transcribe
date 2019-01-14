@@ -1,4 +1,5 @@
 const AWS = require('aws-sdk');
+const { chunk, last } = require('lodash');
 
 const { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY } = process.env;
 
@@ -45,6 +46,42 @@ function listTranscriptionJobs(fileName) {
   return transcribeService.listTranscriptionJobs(params).promise();
 }
 
+function parseTranscription(awsTranscription) {
+  if (!awsTranscription) {
+    return null;
+  }
+  const numWordsPerTimestamp = 10;
+  const {
+    transcripts,
+    items
+  } = awsTranscription.results;
+
+  const result = {};
+  result.jobName = awsTranscription.jobName;
+  result.transcript = transcripts[0].transcript;
+
+  const chunks = chunk(items, numWordsPerTimestamp);
+  result.textByTime = chunks.map(group => {
+    const text = group
+    //TODO Handle punctuations better;
+      .map(item => item.alternatives[0].content)
+      .join(' ');
+
+    // Punctuations do not have start or end time
+    const words = group.filter(item => item.type === 'pronunciation');
+    const startTime = words[0].start_time;
+    const endTime = last(words).end_time;
+
+    return {
+      startTime,
+      endTime,
+      text
+    };
+  });
+
+  return result;
+}
+
 function getTranscription(fileName) {
   const bucket = 'finished-transcription';
   const params = { Bucket: bucket, Key: `${fileName}.json` };
@@ -73,7 +110,7 @@ function sign(filename, contentType) {
   const params = {
     Bucket: bucketName,
     Key: filename,
-    Expires: 60,
+    Expires: 3600,
     ContentType: contentType
   };
 
@@ -96,5 +133,7 @@ function sign(filename, contentType) {
 module.exports = {
   sign,
   listTranscriptionJobs,
-  startTranscription
+  startTranscription,
+  getTranscription,
+  parseTranscription
 };
