@@ -14,7 +14,11 @@ module.exports = {
       const { id: userId } = req.user;
       const { fileName: name } = req.body;
       //TODO should check start transcription for status
-      const recording = await Recording.create({ name, userId, status: 'IN_PROGRESS' });
+      const recording = await Recording.create({
+        name,
+        userId,
+        status: 'IN_PROGRESS'
+      });
       await startTranscription(name);
       res.json({ recording });
     } catch (err) {

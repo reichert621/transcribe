@@ -1,9 +1,6 @@
 module.exports = {
   extends: 'airbnb-base',
-  plugins: [
-    'import',
-    'react'
-  ],
+  plugins: ['import', 'react'],
   parserOptions: {
     ecmaFeatures: {
       jsx: true
@@ -11,36 +8,47 @@ module.exports = {
   },
   rules: {
     'comma-dangle': ['error', 'never'],
-    'indent': ['error', 2, {
-      SwitchCase: 1,
-      VariableDeclarator: 1,
-      outerIIFEBody: 1,
-      FunctionDeclaration: {
-        parameters: 'first',
-        body: 1
-      },
-      FunctionExpression: {
-        parameters: 'first',
-        body: 1
+    indent: [
+      'error',
+      2,
+      {
+        SwitchCase: 1,
+        VariableDeclarator: 1,
+        outerIIFEBody: 1,
+        FunctionDeclaration: {
+          parameters: 'first',
+          body: 1
+        },
+        FunctionExpression: {
+          parameters: 'first',
+          body: 1
+        }
       }
-    }],
+    ],
     'react/jsx-uses-react': 'error',
     'react/jsx-uses-vars': 'error',
-    'no-restricted-syntax': [
-      'error',
-      'LabeledStatement',
-      'WithStatement',
+    'no-restricted-syntax': ['error', 'LabeledStatement', 'WithStatement'],
+    'object-shorthand': [
+      'warn',
+      'always',
+      {
+        ignoreConstructors: false,
+        avoidQuotes: true
+      }
     ],
-    'object-shorthand': ['warn', 'always', {
-      ignoreConstructors: false,
-      avoidQuotes: true,
-    }],
-    'arrow-body-style': ['off', 'as-needed', {
-      requireReturnForObjectLiteral: true,
-    }],
-    'class-methods-use-this': ['warn', {
-      exceptMethods: [],
-    }],
+    'arrow-body-style': [
+      'off',
+      'as-needed',
+      {
+        requireReturnForObjectLiteral: true
+      }
+    ],
+    'class-methods-use-this': [
+      'warn',
+      {
+        exceptMethods: []
+      }
+    ],
     'max-len': ['warn', 100],
     'function-paren-newline': 'warn',
     'no-nested-ternary': 'warn',
@@ -48,7 +56,7 @@ module.exports = {
     'import/no-unresolved': 'warn',
     'import/no-extraneous-dependencies': 'warn',
     'no-useless-escape': 'warn',
-    'strict': 'warn',
+    strict: 'warn',
     'no-plusplus': 'warn',
     'no-unused-vars': 'warn',
     'no-confusing-arrow': 'warn',
@@ -60,12 +68,12 @@ module.exports = {
     'arrow-parens': 'off',
     'space-before-function-paren': 'off',
     'no-else-return': 'off',
-    'camelcase': 'warn',
+    camelcase: 'warn',
     'no-shadow': 'warn'
   },
   globals: {
-    'window': true,
-    'document': true,
-    'confirm': true
+    window: true,
+    document: true,
+    confirm: true
   }
 };

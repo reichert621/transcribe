@@ -51,10 +51,7 @@ function parseTranscription(awsTranscription) {
     return null;
   }
   const numWordsPerTimestamp = 10;
-  const {
-    transcripts,
-    items
-  } = awsTranscription.results;
+  const { transcripts, items } = awsTranscription.results;
 
   const result = {};
   result.jobName = awsTranscription.jobName;
@@ -63,7 +60,7 @@ function parseTranscription(awsTranscription) {
   const chunks = chunk(items, numWordsPerTimestamp);
   result.textByTime = chunks.map(group => {
     const text = group
-    //TODO Handle punctuations better;
+      //TODO Handle punctuations better;
       .map(item => item.alternatives[0].content)
       .join(' ');
 

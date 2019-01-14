@@ -74,11 +74,14 @@
     "eslint-plugin-import": "^2.11.0",
     "eslint-plugin-react": "^7.7.0",
     "file-loader": "^1.1.11",
+    "husky": "^1.3.1",
     "jest": "^23.6.0",
     "less": "^3.9.0",
     "less-loader": "^4.1.0",
+    "lint-staged": "^8.1.0",
     "mocha": "^2.5.3",
     "nodemon": "^1.18.9",
+    "prettier": "^1.15.3",
     "raw-loader": "^0.5.1",
     "style-loader": "^0.21.0",
     "ts-jest": "^22.4.4",
@@ -115,6 +118,17 @@
       "node"
     ]
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx}": [
+      "npm run prettier --",
+      "git add"
+    ]
+  },
   "main": "server/index.js",
   "scripts": {
     "heroku-postbuild": "npm run db:migrate && npm run build",
@@ -125,12 +139,16 @@
     "lint:client": "npm run tslint:client && npm run eslint:client",
     "lint:api": "./node_modules/.bin/eslint 'server/**/*.js'",
     "lint": "./node_modules/.bin/eslint",
+    "prettier:client": "./node_modules/.bin/prettier --write 'client/**/*.{js,ts,tsx}'",
+    "prettier:api": "./node_modules/.bin/prettier --write 'server/**/*.{js,ts,tsx}'",
+    "prettier": "npm run prettier:client && npm run prettier:api",
     "db:migration": "./node_modules/.bin/knex migrate:make --knexfile server/db/knexfile.js",
     "db:migrate": "./node_modules/.bin/knex migrate:latest --knexfile server/db/knexfile.js",
     "db:seed": "./node_modules/.bin/knex seed:run --knexfile server/db/knexfile.js",
     "db:rollback": "./node_modules/.bin/knex migrate:rollback --knexfile server/db/knexfile.js",
     "build": "./node_modules/.bin/webpack --config webpack.prod.config.js -p",
     "watch": "./node_modules/.bin/webpack --config webpack.dev.config.js -w",
-    "test": "jest"
+    "test:api": "./node_modules/.bin/mocha server/tests",
+    "test:ui": "jest"
   }
 }
