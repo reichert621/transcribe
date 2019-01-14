@@ -32,6 +32,17 @@ const update = (id, params) => {
     .then(() => findById(id));
 };
 
+const findByName = (name, where = {}) => {
+  return findOne({ ...where, name });
+};
+
+const updateByName = (name, params) => {
+  return findByName(name)
+    .update(params)
+    .then(count => count > 0)
+    .then(() => findByName(name));
+};
+
 const destroy = id => {
   return findById(id).delete();
 };
@@ -41,5 +52,7 @@ module.exports = {
   findById,
   create,
   update,
-  destroy
+  destroy,
+  findOne,
+  updateByName
 };

@@ -11,18 +11,8 @@ export type Recording = {
 };
 
 export type Transcription = {
-  fullText: string;
-  textByTime: {
-    startTime: number;
-    endTime?: number;
-    text: string;
-  }[];
-};
-
-export type TranscriptionJob = {
-  name: string;
-  createdAt: any;
-  status: 'IN_PROGRESS' | 'FAILED' | 'COMPLETED';
+  transcript: string;
+  textByTime: { startTime: number; endTime?: number; text: string }[];
 };
 
 export const fetchRecordings = (): Promise<Recording[]> => {
@@ -48,11 +38,11 @@ export const uploadToS3 = (s3Url: string, file: File) => {
 
 export const fetchTranscriptionJobStatuses = (
   fileName?: string
-): Promise<TranscriptionJob[]> => {
+): Promise<Recording[]> => {
   return request
-    .get('/api/transcription-statuses')
+    .get('/api/recordings')
     .query({ fileName })
-    .then(res => res.body.jobs);
+    .then(res => res.body.recordings);
 };
 
 // TODO: more consistent naming (RESTful)
@@ -66,19 +56,21 @@ export const createTranscriptionJob = (
 };
 
 export const fetchRecording = (recordingId: number): Promise<Recording> => {
-  // return request.get(`/api/recordings/${recordingId}`).then(res => res.body);
-  const response: Recording = {
-    id: 2,
-    name: '20190101-recording.mp3',
-    status: 'COMPLETED',
-    transcription: {
-      fullText: 'this is a fake transcription',
-      textByTime: [
-        { startTime: 0, endTime: 2, text: 'this is a' },
-        { startTime: 2, endTime: 3, text: 'fake transcription' }
-      ]
-    }
-  };
+  return request
+    .get(`/api/recordings/${recordingId}`)
+    .then(res => res.body.recording);
+  // const response: Recording = {
+  //   id: 2,
+  //   name: '20190101-recording.mp3',
+  //   status: 'COMPLETED',
+  //   transcription: {
+  //     fullText: 'this is a fake transcription',
+  //     textByTime: [
+  //       { startTime: 0, endTime: 2, text: 'this is a' },
+  //       { startTime: 2, endTime: 3, text: 'fake transcription' }
+  //     ]
+  //   }
+  // };
 
-  return Promise.resolve(response);
+  // return Promise.resolve(response);
 };
