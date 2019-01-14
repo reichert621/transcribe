@@ -1,9 +1,11 @@
 import * as request from 'superagent';
 
+export type TranscriptionStatus = 'IN_PROGRESS' | 'FAILED' | 'COMPLETED';
+
 export type Recording = {
   id: number;
   name: string;
-  status?: 'IN_PROGRESS' | 'FAILED' | 'COMPLETED';
+  status?: TranscriptionStatus;
   timestamp?: any;
   transcription?: Transcription;
 };

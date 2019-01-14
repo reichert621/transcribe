@@ -1,9 +1,11 @@
 import * as React from 'react';
 import { RouteComponentProps, Link } from 'react-router-dom';
 import Dropzone from 'react-dropzone';
+import * as moment from 'moment';
 import {
   Recording,
   TranscriptionJob,
+  TranscriptionStatus,
   fetchRecordings,
   createTranscriptionJob,
   fetchTranscriptionJobStatuses,
@@ -11,6 +13,7 @@ import {
   uploadToS3
 } from '../helpers/recordings';
 import { Flex, Box, Text, Header } from './Common';
+import styled from 'styled-components';
 
 type DashboardProps = RouteComponentProps<{}> & {};
 type DashboardState = {
@@ -19,6 +22,17 @@ type DashboardState = {
   jobs: TranscriptionJob[];
   isUploading: boolean;
 };
+
+const UploadZone = styled(Box)`
+  cursor: pointer;
+  padding: 24px;
+
+  &:hover {
+    background-color: #fafafa;
+  }
+
+  ${props => props.active && 'background-color: #fafafa;'}
+`;
 
 class Dashboard extends React.Component<DashboardProps, DashboardState> {
   constructor(props: DashboardProps) {
@@ -71,6 +85,51 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
       });
   };
 
+  renderUploadZone() {
+    return (
+      <Dropzone onDrop={this.handleFileDrop}>
+        {({ getRootProps, getInputProps, isDragActive }) => (
+          <UploadZone {...getRootProps()} active={isDragActive}>
+            <input {...getInputProps()} />
+
+            {isDragActive ? (
+              <Text>Drop file!</Text>
+            ) : (
+              <Text>
+                Try dropping some files here, or click to select files to
+                upload.
+              </Text>
+            )}
+          </UploadZone>
+        )}
+      </Dropzone>
+    );
+  }
+
+  renderJobsByStatus(status: TranscriptionStatus) {
+    const { jobs = [] } = this.state;
+    const filtered = jobs.filter(job => job.status === status);
+
+    // TODO: show loading/empty state
+
+    return filtered.map((job, key) => {
+      const { name, status, createdAt } = job;
+      const timestamp = moment(createdAt).format('YYYY-MM-DD hh:ss');
+
+      return (
+        <Box key={key} mb={4}>
+          <Box p={1}>
+            <Link to={`/recording/${1}`}>Name: {name}</Link>
+          </Box>
+          {/* <Box p={1}>Status: {status}</Box> */}
+          <Box p={1}>
+            <Text fontSize={12}>Created: {timestamp}</Text>
+          </Box>
+        </Box>
+      );
+    });
+  }
+
   render() {
     const { jobs = [], isUploading } = this.state;
 
@@ -80,41 +139,32 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
         <Box my={4}>
           <Header>Dashboard</Header>
 
-          <Dropzone onDrop={this.handleFileDrop}>
-            {({ getRootProps, getInputProps, isDragActive }) => (
-              <Box {...getRootProps()} mt={4} style={{ cursor: 'pointer' }}>
-                <input {...getInputProps()} />
-
-                {isUploading ? (
-                  <Text>Uploading...</Text>
-                ) : (
-                  <Text>
-                    Try dropping some files here, or click to select files to
-                    upload.
-                  </Text>
-                )}
-              </Box>
-            )}
-          </Dropzone>
+          <Box mt={4}>
+            {isUploading ? <Text>Uploading...</Text> : this.renderUploadZone()}
+          </Box>
         </Box>
 
         <Box my={4}>
-          <Header mb={2}>Jobs</Header>
-
-          <Box>
-            {jobs.map((job, key) => {
-              const { name, status, createdAt } = job;
-              return (
-                <Box key={key} mb={4}>
-                  <Box p={1}>
-                    <Link to={`/recording/${1}`}>Name: {name}</Link>
-                  </Box>
-                  <Box p={1}>Status: {status}</Box>
-                  <Box p={1}>Created: {createdAt}</Box>
-                </Box>
-              );
-            })}
-          </Box>
+          <Flex>
+            <Box flex={1}>
+              <Header fontSize={3} mb={2}>
+                In Progress
+              </Header>
+              {this.renderJobsByStatus('IN_PROGRESS')}
+            </Box>
+            <Box flex={1}>
+              <Header fontSize={3} mb={2}>
+                Completed
+              </Header>
+              {this.renderJobsByStatus('COMPLETED')}
+            </Box>
+            <Box flex={1}>
+              <Header fontSize={3} mb={2}>
+                Failed
+              </Header>
+              {this.renderJobsByStatus('FAILED')}
+            </Box>
+          </Flex>
         </Box>
       </Box>
     );
