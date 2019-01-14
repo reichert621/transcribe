@@ -1,5 +1,5 @@
 const AWS = require('aws-sdk');
-const { chunk, last } = require('lodash');
+const { chunk, last, isObject } = require('lodash');
 
 const { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY } = process.env;
 
@@ -43,40 +43,53 @@ function listTranscriptionJobs(fileName) {
     MaxResults: 100
   };
 
-  return transcribeService.listTranscriptionJobs(params).promise();
+  return transcribeService
+    .listTranscriptionJobs(params)
+    .promise()
+    .then(res => res.TranscriptionJobSummaries);
 }
 
-function parseTranscription(awsTranscription) {
-  if (!awsTranscription) {
+function isValidTranscription(awsTranscription) {
+  if (!isObject(awsTranscription)) {
+    return false;
+  }
+
+  const { results, jobName } = awsTranscription;
+
+  if (!isObject(results) || !jobName) {
+    return false;
+  }
+
+  const { transcripts, items } = results;
+
+  return transcripts && transcripts.length && items && items.length;
+}
+
+function parseTranscription(awsTranscription, numWordsPerTimestamp = 10) {
+  if (!isValidTranscription(awsTranscription)) {
     return null;
   }
-  const numWordsPerTimestamp = 10;
-  const { transcripts, items } = awsTranscription.results;
 
-  const result = {};
-  result.jobName = awsTranscription.jobName;
-  result.transcript = transcripts[0].transcript;
-
+  const { results, jobName } = awsTranscription;
+  const { transcripts, items } = results;
+  const { transcript } = transcripts[0];
   const chunks = chunk(items, numWordsPerTimestamp);
-  result.textByTime = chunks.map(group => {
-    const text = group
-      //TODO Handle punctuations better;
-      .map(item => item.alternatives[0].content)
-      .join(' ');
 
-    // Punctuations do not have start or end time
-    const words = group.filter(item => item.type === 'pronunciation');
-    const startTime = words[0].start_time;
-    const endTime = last(words).end_time;
+  return {
+    jobName,
+    transcript,
+    textByTime: chunks.map(group => {
+      // TODO Handle punctuations better
+      const text = group.map(item => item.alternatives[0].content).join(' ');
 
-    return {
-      startTime,
-      endTime,
-      text
-    };
-  });
+      // Punctuations do not have start or end time
+      const words = group.filter(item => item.type === 'pronunciation');
+      const startTime = words[0].start_time;
+      const endTime = last(words).end_time;
 
-  return result;
+      return { startTime, endTime, text };
+    })
+  };
 }
 
 function getTranscription(fileName) {
@@ -132,5 +145,6 @@ module.exports = {
   listTranscriptionJobs,
   startTranscription,
   getTranscription,
+  isValidTranscription,
   parseTranscription
 };

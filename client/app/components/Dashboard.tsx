@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { RouteComponentProps, Link } from 'react-router-dom';
 import Dropzone from 'react-dropzone';
+import { groupBy } from 'lodash';
 import * as moment from 'moment';
 import {
   Recording,
@@ -15,7 +16,7 @@ import styled from 'styled-components';
 
 type DashboardProps = RouteComponentProps<{}> & {};
 type DashboardState = {
-  recordings: Recording[];
+  recordings: { [type: string]: Recording[] };
   files: File[];
   isUploading: boolean;
 };
@@ -36,17 +37,24 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
     super(props);
 
     this.state = {
-      recordings: [],
+      recordings: {},
       files: [],
       isUploading: false
     };
   }
 
   componentDidMount() {
+    return this.fetchRecordings();
+  }
+
+  fetchRecordings() {
     return fetchTranscriptionJobStatuses()
       .then(recordings => {
-        console.log('Job statuses:', recordings);
-        this.setState({ recordings });
+        console.log('Recordings:', recordings);
+
+        this.setState({
+          recordings: groupBy(recordings, r => r.status)
+        });
       })
       .catch(err => {
         console.log('Error fetching recordings!', err);
@@ -75,6 +83,7 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
         console.log('Upload results:', res);
         this.setState({ isUploading: false });
       })
+      .then(() => this.fetchRecordings())
       .catch(err => {
         console.log('Oh shit!', err);
         this.setState({ isUploading: false });
@@ -86,7 +95,8 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
       <Dropzone onDrop={this.handleFileDrop}>
         {({ getRootProps, getInputProps, isDragActive }) => (
           <UploadZone {...getRootProps()} active={isDragActive}>
-            <input {...getInputProps()} />
+            {/* TODO: specify all acceptable file types */}
+            <input {...getInputProps()} accept="video/mp4,audio/mp3" />
 
             {isDragActive ? (
               <Text>Drop file!</Text>
@@ -103,15 +113,16 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
   }
 
   renderJobsByStatus(status: TranscriptionStatus) {
-    const { recordings = [] } = this.state;
-    const filtered = recordings.filter(
-      recording => recording.status === status
-    );
+    const recordings = this.state.recordings[status];
 
     // TODO: show loading/empty state
+    if (!recordings || !recordings.length) {
+      return null;
+    }
 
-    return filtered.map((recording, key) => {
+    return recordings.map((recording, key) => {
       const { id, name, status, timestamp, transcription } = recording;
+      const ts = moment(timestamp).format('MMM DD, h:mm a');
 
       return (
         <Box key={key} mb={4}>
@@ -122,11 +133,9 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
               <Text>{name}</Text>
             )}
           </Box>
-          {/* <Box p={1}>Status: {status}</Box> */}
+
           <Box p={1}>
-            <Text fontSize={12}>
-              Created: {moment(timestamp).format('YYYY-MM-DD hh:ss')}
-            </Text>
+            <Text fontSize={12}>Created: {ts}</Text>
           </Box>
         </Box>
       );
@@ -134,7 +143,7 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
   }
 
   render() {
-    const { recordings = [], isUploading } = this.state;
+    const { isUploading } = this.state;
 
     // TODO: improve design (obviously) and split out components as they grow
     return (
@@ -143,7 +152,11 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
           <Header>Dashboard</Header>
 
           <Box mt={4}>
-            {isUploading ? <Text>Uploading...</Text> : this.renderUploadZone()}
+            {isUploading ? (
+              <Text p={24}>Uploading...</Text>
+            ) : (
+              this.renderUploadZone()
+            )}
           </Box>
         </Box>
 
@@ -151,15 +164,15 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
           <Flex>
             <Box flex={1}>
               <Header fontSize={3} mb={2}>
-                In Progress
-              </Header>
-              {this.renderJobsByStatus('IN_PROGRESS')}
-            </Box>
-            <Box flex={1}>
-              <Header fontSize={3} mb={2}>
                 Completed
               </Header>
               {this.renderJobsByStatus('COMPLETED')}
+            </Box>
+            <Box flex={1}>
+              <Header fontSize={3} mb={2}>
+                In Progress
+              </Header>
+              {this.renderJobsByStatus('IN_PROGRESS')}
             </Box>
             <Box flex={1}>
               <Header fontSize={3} mb={2}>
