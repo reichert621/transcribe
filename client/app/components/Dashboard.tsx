@@ -111,12 +111,16 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
     // TODO: show loading/empty state
 
     return filtered.map((recording, key) => {
-      const { id, name, status, timestamp } = recording;
+      const { id, name, status, timestamp, transcription } = recording;
 
       return (
         <Box key={key} mb={4}>
           <Box p={1}>
-            <Link to={`/recording/${id}`}>Name: {name}</Link>
+            {transcription ? (
+              <Link to={`/recording/${id}`}>{name}</Link>
+            ) : (
+              <Text>{name}</Text>
+            )}
           </Box>
           {/* <Box p={1}>Status: {status}</Box> */}
           <Box p={1}>
