@@ -40,6 +40,8 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
       })
       .catch(err => {
         console.log('Error fetching recordings!', err);
+        // TODO
+        this.props.history.push('/login');
       });
   }
 

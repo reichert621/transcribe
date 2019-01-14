@@ -1,13 +1,17 @@
 const express = require('express');
+const { users, recordings } = require('./db/controllers');
+const { sign, listTranscriptionJobs } = require('./aws');
+const { auth, isAuthenticated } = require('./passport');
 
 const { Router } = express;
-const { recordings } = require('./db/controllers');
-const { sign, listTranscriptionJobs } = require('./aws');
-
 const api = Router();
 
 // For testing
 api.get('/ping', (req, res) => res.json({ message: 'pong' }));
+
+api.post('/register', users.register);
+api.post('/login', auth, users.login);
+api.delete('/logout', users.logout);
 
 api.get('/recordings', recordings.fetch);
 api.post('/recordings', recordings.create);
@@ -24,7 +28,7 @@ api.get('/signed-url', (req, res) => {
     });
 });
 
-api.get('/transcription-statuses', (req, res) => {
+api.get('/transcription-statuses', isAuthenticated, (req, res) => {
   // A fileName can be optionally included in the query params to filter jobs
   const { fileName } = req.query;
 

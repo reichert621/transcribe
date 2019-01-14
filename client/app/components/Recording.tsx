@@ -51,7 +51,6 @@ class RecordingPage extends React.Component<RecordingProps, RecordingState> {
 
           <Input
             mb={2}
-            p={2}
             type="text"
             placeholder="Search"
             value={query}

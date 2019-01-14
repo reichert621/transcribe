@@ -44,4 +44,13 @@ export const Input = styled.input`
   ${width}
   ${fontSize}
   ${borders}
+  padding: 8px;
+`;
+
+export const Button = styled.button`
+  ${space}
+  ${width}
+  ${fontSize}
+  ${borders}
+  ${color}
 `;
