@@ -4,8 +4,10 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const cors = require('cors');
+const KnexSessionStore = require('connect-session-knex')(session);
 const { build, port, secret } = require('./config');
 const template = require('./template');
+const knex = require('./db/knex');
 const api = require('./api');
 
 const app = express();
@@ -22,7 +24,8 @@ app.use(
     saveUninitialized: false,
     cookie: {
       maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
-    }
+    },
+    store: new KnexSessionStore({ knex })
   })
 );
 

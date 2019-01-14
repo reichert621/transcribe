@@ -13,10 +13,10 @@ api.post('/register', users.register);
 api.post('/login', auth, users.login);
 api.delete('/logout', users.logout);
 
-api.get('/recordings', recordings.fetch);
-api.post('/recordings', recordings.create);
+api.get('/recordings', isAuthenticated, recordings.fetch);
+api.post('/recordings', isAuthenticated, recordings.create);
 
-api.get('/signed-url', (req, res) => {
+api.get('/signed-url', isAuthenticated, (req, res) => {
   const { fileName, contentType } = req.query;
 
   return sign(fileName, contentType)
@@ -28,7 +28,7 @@ api.get('/signed-url', (req, res) => {
     });
 });
 
-api.get('/transcription-statuses', (req, res) => {
+api.get('/transcription-statuses', isAuthenticated, (req, res) => {
   // A fileName can be optionally included in the query params to filter jobs
   const { fileName } = req.query;
 
