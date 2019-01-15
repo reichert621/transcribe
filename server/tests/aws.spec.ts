@@ -1,7 +1,7 @@
-const { describe, it } = require('mocha');
-const { assert } = require('chai');
-const { getTestTranscription } = require('./utils');
-const { parseTranscription } = require('../aws');
+import { describe, it } from 'mocha';
+import { assert } from 'chai';
+import { getTestTranscription } from './utils';
+import { parseTranscription } from '../aws';
 
 describe('aws', () => {
   describe('parseTranscription', () => {
@@ -45,12 +45,7 @@ describe('aws', () => {
     });
 
     it('handles invalid transcriptions', () => {
-      assert.isNull(parseTranscription());
       assert.isNull(parseTranscription(null));
-      assert.isNull(parseTranscription({}));
-      assert.isNull(parseTranscription([]));
-      assert.isNull(parseTranscription({ foo: 'bar' }));
-      assert.isNull(parseTranscription({ results: [], jobName: 'foo' }));
     });
   });
 });

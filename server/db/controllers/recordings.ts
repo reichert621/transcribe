@@ -1,15 +1,17 @@
-const { first } = require('lodash');
-const { Recording } = require('../index');
-const {
+import { Request, Response } from 'express';
+import { first } from 'lodash';
+import { M, Recording } from '../index';
+import {
+  AwsTranscription,
   startTranscription,
   listTranscriptionJobs,
   getTranscription,
   isValidTranscription,
   parseTranscription
-} = require('../../aws');
-const { handleError } = require('./utils');
+} from '../../aws';
+import { handleError } from './utils';
 
-const getInProgressJobs = recordings => {
+const getInProgressJobs = (recordings: M.Recording[]) => {
   const promises = recordings
     .filter(({ status }) => status === 'IN_PROGRESS')
     .map(({ name }) => listTranscriptionJobs(name));
@@ -23,7 +25,9 @@ const getInProgressJobs = recordings => {
   });
 };
 
-const getCompletedTranscriptions = jobs => {
+const getCompletedTranscriptions = (
+  jobs: AWS.TranscribeService.TranscriptionJobSummary[]
+) => {
   const promises = jobs.reduce((acc, job) => {
     const { TranscriptionJobName: name, TranscriptionJobStatus: status } = job;
 
@@ -37,7 +41,7 @@ const getCompletedTranscriptions = jobs => {
   return Promise.all(promises);
 };
 
-const updateRecordingTranscriptions = transcriptions => {
+const updateRecordingTranscriptions = (transcriptions: AwsTranscription[]) => {
   const promises = transcriptions
     .filter(transcription => isValidTranscription(transcription))
     .map(transcription => {
@@ -53,8 +57,8 @@ const updateRecordingTranscriptions = transcriptions => {
   return Promise.all(promises);
 };
 
-module.exports = {
-  async fetch(req, res) {
+export default {
+  async fetch(req: Request, res: Response) {
     try {
       // const { fileName, status } = req.query;
       const { id: userId } = req.user;
@@ -75,7 +79,7 @@ module.exports = {
     }
   },
 
-  findById(req, res) {
+  findById(req: Request, res: Response) {
     const { id } = req.params;
 
     return Recording.findById(id)
@@ -83,7 +87,7 @@ module.exports = {
       .catch(err => handleError(res, err));
   },
 
-  async create(req, res) {
+  async create(req: Request, res: Response) {
     try {
       const { id: userId } = req.user;
       const { fileName: name } = req.body;

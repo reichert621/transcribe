@@ -1,6 +1,6 @@
-const express = require('express');
-const { users, recordings, aws } = require('./db/controllers');
-const { auth, isAuthenticated } = require('./passport');
+import * as express from 'express';
+import { users, recordings, aws } from './db/controllers';
+import { auth, isAuthenticated } from './passport';
 
 const { Router } = express;
 const api = Router();
@@ -18,4 +18,4 @@ api.post('/recordings', isAuthenticated, recordings.create);
 // AWS endpoints
 api.get('/signed-url', isAuthenticated, aws.getSignedUrl);
 
-module.exports = api;
+export default api;

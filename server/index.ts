@@ -1,15 +1,15 @@
-const express = require('express');
-const session = require('express-session');
-const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
-const passport = require('passport');
-const cors = require('cors');
-const KnexSessionStore = require('connect-session-knex')(session);
-const { build, port, secret } = require('./config');
-const template = require('./template');
-const knex = require('./db/knex');
-const api = require('./api');
+import * as express from 'express';
+import * as session from 'express-session';
+import * as bodyParser from 'body-parser';
+import * as cookieParser from 'cookie-parser';
+import * as passport from 'passport';
+import * as cors from 'cors';
+import { build, port, secret } from './config';
+import template from './template';
+import knex from './db/knex';
+import api from './api';
 
+const KnexSessionStore = require('connect-session-knex')(session);
 const app = express();
 
 app.use(cors());
@@ -38,10 +38,7 @@ passport.deserializeUser(deserialize);
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Placeholder
-const home = (req, res) => res.send(template());
-
 app.use('/api', api);
-app.get('*', home);
+app.get('*', (req, res) => res.send(template()));
 
 app.listen(port, () => console.log(`Listening on port ${port}`));

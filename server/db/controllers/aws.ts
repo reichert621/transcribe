@@ -1,8 +1,9 @@
-const { sign } = require('../../aws');
-const { handleError } = require('./utils');
+import { Request, Response } from 'express';
+import { sign } from '../../aws';
+import { handleError } from './utils';
 
-module.exports = {
-  getSignedUrl(req, res) {
+export default {
+  getSignedUrl(req: Request, res: Response) {
     const { fileName, contentType } = req.query;
 
     return sign(fileName, contentType)
