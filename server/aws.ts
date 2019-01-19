@@ -1,5 +1,6 @@
-const AWS = require('aws-sdk');
-const { chunk, last, isObject } = require('lodash');
+import * as AWS from 'aws-sdk';
+import * as Bluebird from 'bluebird';
+import { chunk, last, isObject } from 'lodash';
 
 const { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY } = process.env;
 
@@ -17,8 +18,24 @@ const transcribeService = new AWS.TranscribeService({
   secretAccessKey: AWS_SECRET_ACCESS_KEY
 });
 
+// TODO: check if this type definition already exists on AWS
+export type AwsTranscription = {
+  results: {
+    transcripts: {
+      transcript: any;
+    }[];
+    items: {
+      start_time: string;
+      end_time: string;
+      alternatives: { confidence: string; content: string }[];
+      type: string;
+    }[];
+  };
+  jobName: string;
+};
+
 // fileUri format: 1547344263217-podcast-snippet.mp3
-function startTranscription(fileName) {
+export function startTranscription(fileName: string) {
   const fileUri = `${awsPath + bucketName}/${fileName}`;
   const fileSplit = fileName.split('.');
   const mediaFormat = fileSplit[fileSplit.length - 1];
@@ -37,7 +54,9 @@ function startTranscription(fileName) {
   return transcribeService.startTranscriptionJob(params).promise();
 }
 
-function listTranscriptionJobs(fileName) {
+export function listTranscriptionJobs(
+  fileName: string
+): Promise<AWS.TranscribeService.TranscriptionJobSummary[]> {
   const params = {
     JobNameContains: fileName,
     MaxResults: 100
@@ -49,7 +68,7 @@ function listTranscriptionJobs(fileName) {
     .then(res => res.TranscriptionJobSummaries);
 }
 
-function isValidTranscription(awsTranscription) {
+export function isValidTranscription(awsTranscription: any) {
   if (!isObject(awsTranscription)) {
     return false;
   }
@@ -65,7 +84,10 @@ function isValidTranscription(awsTranscription) {
   return transcripts && transcripts.length && items && items.length;
 }
 
-function parseTranscription(awsTranscription, numWordsPerTimestamp = 10) {
+export function parseTranscription(
+  awsTranscription: AwsTranscription,
+  numWordsPerTimestamp = 10
+) {
   if (!isValidTranscription(awsTranscription)) {
     return null;
   }
@@ -92,14 +114,15 @@ function parseTranscription(awsTranscription, numWordsPerTimestamp = 10) {
   };
 }
 
-function getTranscription(fileName) {
+export function getTranscription(fileName: string) {
   const bucket = 'finished-transcription';
   const params = { Bucket: bucket, Key: `${fileName}.json` };
 
-  return new Promise((resolve, reject) => {
+  return new Bluebird((resolve, reject) => {
     s3.getObject(params)
       .on('success', response => {
-        const json = JSON.parse(response.data.Body);
+        const body = response.data && response.data.Body;
+        const json = JSON.parse(body.toString());
 
         resolve(json);
       })
@@ -113,10 +136,13 @@ function getTranscription(fileName) {
   // return s3
   //   .getObject(params)
   //   .promise()
-  //   .then(res => JSON.parse(res.data.Body));
+  //   .then(res => {
+  //     console.log({ body: res.Body });
+  //     return JSON.parse(res.Body.toString());
+  //   });
 }
 
-function sign(filename, contentType) {
+export function sign(filename: string, contentType: string) {
   const params = {
     Bucket: bucketName,
     Key: filename,
@@ -124,7 +150,7 @@ function sign(filename, contentType) {
     ContentType: contentType
   };
 
-  return new Promise((resolve, reject) => {
+  return new Bluebird((resolve, reject) => {
     s3.getSignedUrl('putObject', params, (err, data) => {
       if (err) {
         reject(err);
@@ -140,7 +166,7 @@ function sign(filename, contentType) {
   //   .promise()
 }
 
-module.exports = {
+export default {
   sign,
   listTranscriptionJobs,
   startTranscription,

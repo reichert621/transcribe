@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "lib": ["es2015", "es2015.iterable"],
+    "moduleResolution": "node",
+    "noImplicitAny": false,
+    "outDir": "build",
+    "target": "es5",
+    "allowJs": true,
+    "types": [
+      "bluebird",
+      "body-parser",
+      "cookie-parser",
+      "cors",
+      "express",
+      "express-session",
+      "lodash",
+      "passport"
+    ]
+  }
+}

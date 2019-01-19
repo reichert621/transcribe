@@ -1,4 +1,4 @@
-const generateTestTranscriptionItems = transcript => {
+export const generateTestTranscriptionItems = (transcript: string) => {
   return transcript
     .split(' ')
     .map(word => word.replace(/\W+/g, ''))
@@ -16,7 +16,7 @@ const generateTestTranscriptionItems = transcript => {
     });
 };
 
-const getTestTranscription = (transcript = 'Hello world') => {
+export const getTestTranscription = (transcript = 'Hello world') => {
   return {
     jobName: `${+new Date()}-file.mp3`,
     accountId: '1234567890',
@@ -25,9 +25,4 @@ const getTestTranscription = (transcript = 'Hello world') => {
       items: generateTestTranscriptionItems(transcript)
     }
   };
-};
-
-module.exports = {
-  generateTestTranscriptionItems,
-  getTestTranscription
 };
