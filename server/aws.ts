@@ -55,7 +55,7 @@ export function startTranscription(fileName: string) {
 }
 
 export function listTranscriptionJobs(
-  fileName: string
+  fileName?: string
 ): Promise<AWS.TranscribeService.TranscriptionJobSummary[]> {
   const params = {
     JobNameContains: fileName,

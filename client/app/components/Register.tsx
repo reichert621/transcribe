@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, Link } from 'react-router-dom';
 import { register } from '../helpers/auth';
 import { Box, Header, Input, Button } from './Common';
 
@@ -60,6 +60,10 @@ class Register extends React.Component<RegisterProps, RegisterState> {
 
           <Button type="submit">Submit</Button>
         </form>
+
+        <Box mt={4}>
+          <Link to="/login">Login</Link>
+        </Box>
       </Box>
     );
   }
