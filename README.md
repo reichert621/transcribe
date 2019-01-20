@@ -37,6 +37,7 @@ For reference, my local environment variables look like this in my `~/.bash_prof
   export TRANSCRIBE_DB_PW=''
   export AWS_ACCESS_KEY_ID=''
   export AWS_SECRET_ACCESS_KEY=''
+  export STRIPE_SECRET_KEY=''
 ```
 
 ### Run the app
@@ -46,6 +47,7 @@ Migrate the database, build the client, and run the server:
 ```
 npm run db:migrate
 npm run build
+npm run ts:build
 npm start
 ```
 
@@ -56,7 +58,7 @@ Go to `localhost:8000` (or whatever `$PORT` you set) to check that the app is ru
 To simply start the server, run:
 
 ```
-npm run dev
+npm run ts:dev
 ```
 
 This will serve the contents of the `client/build` directory, which are built with Webpack.
