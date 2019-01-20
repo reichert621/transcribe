@@ -1,5 +1,5 @@
 import * as express from 'express';
-import { users, recordings, aws } from './db/controllers';
+import { users, recordings, aws, stripe } from './db/controllers';
 import { auth, isAuthenticated } from './passport';
 
 const { Router } = express;
@@ -17,5 +17,9 @@ api.get('/recordings/:id', isAuthenticated, recordings.findById);
 api.post('/recordings', isAuthenticated, recordings.create);
 // AWS endpoints
 api.get('/signed-url', isAuthenticated, aws.getSignedUrl);
+// Stripe endpoints
+api.post('/charges', stripe.charge);
+api.post('/subscriptions', stripe.subscription);
+api.get('/balance', isAuthenticated, stripe.balance);
 
 export default api;
