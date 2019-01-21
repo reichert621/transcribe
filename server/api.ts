@@ -1,5 +1,5 @@
 import * as express from 'express';
-import { users, recordings, aws, stripe } from './db/controllers';
+import { users, recordings, aws, stripe, ny } from './db/controllers';
 import { auth, isAuthenticated } from './passport';
 
 const { Router } = express;
@@ -21,5 +21,7 @@ api.get('/signed-url', isAuthenticated, aws.getSignedUrl);
 api.post('/charges', stripe.charge);
 api.post('/subscriptions', stripe.subscription);
 api.get('/balance', isAuthenticated, stripe.balance);
+// Misc.
+api.get('/scraper/audio', ny.getAudioUrl);
 
 export default api;
