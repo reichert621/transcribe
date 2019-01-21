@@ -19,6 +19,9 @@ import IconButton from '@material-ui/core/IconButton';
 import ReceiptIcon from '@material-ui/icons/Receipt';
 import HourglassIcon from '@material-ui/icons/HourglassFull';
 import ErrorIcon from '@material-ui/icons/Error';
+import ArrowIcon from '@material-ui/icons/ArrowForward';
+import Spinner from '@material-ui/core/CircularProgress';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import {
   Recording,
   TranscriptionStatus,
@@ -34,13 +37,14 @@ type DashboardProps = RouteComponentProps<{}> & {};
 type DashboardState = {
   recordings: { [type: string]: Recording[] };
   files: File[];
+  isLoading: boolean;
   isUploading: boolean;
 };
 
 const UploadZone = styled(Box)`
   border-radius: 2px;
   cursor: pointer;
-  padding: 64px 24px;
+  padding: 64px 32px;
 
   &:hover {
     background-color: #fafafa;
@@ -61,12 +65,15 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
     this.state = {
       recordings: {},
       files: [],
+      isLoading: true,
       isUploading: false
     };
   }
 
   componentDidMount() {
-    return this.fetchRecordings();
+    return this.fetchRecordings()
+      .then(() => this.setState({ isLoading: false }))
+      .catch(err => this.setState({ isLoading: false }));
   }
 
   fetchRecordings() {
@@ -125,8 +132,7 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
                 <Text>Drop file!</Text>
               ) : (
                 <Text>
-                  Try dropping some files here, or click to select files to
-                  upload.
+                  Try dropping a file here, or click to select a file to upload!
                 </Text>
               )}
             </UploadZone>
@@ -160,12 +166,23 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
   };
 
   renderJobsByStatus(status: TranscriptionStatus) {
+    if (this.state.isLoading) {
+      return (
+        <Flex justifyContent="center" alignItems="center" mt={2}>
+          <Spinner />
+        </Flex>
+      );
+    }
+
     const recordings = this.state.recordings[status];
-    const icon = this.getIconByStatus(status);
 
     // TODO: show loading/empty state
     if (!recordings || !recordings.length) {
-      return null;
+      return (
+        <ListItem>
+          <ListItemText primary="None" />
+        </ListItem>
+      );
     }
 
     return recordings.map((recording, key) => {
@@ -178,21 +195,68 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
           button
           onClick={() => this.viewRecordingDetails(recording)}
         >
-          {/* <ListItemIcon>
-            <ReceiptIcon />
-          </ListItemIcon> */}
           <ListItemAvatar>
-            <Avatar>{icon}</Avatar>
+            <Avatar>{this.getIconByStatus(status)}</Avatar>
           </ListItemAvatar>
-          <ListItemText primary={name} secondary={`Created: ${ts}`} />
-          {/* <ListItemSecondaryAction>
-            <IconButton aria-label="Go">
-              <ReceiptIcon />
-            </IconButton>
-          </ListItemSecondaryAction> */}
+          <ListItemText
+            primary={name}
+            secondary={
+              status === 'IN_PROGRESS' ? (
+                <LinearProgress style={{ marginTop: 8 }} />
+              ) : (
+                `Created: ${ts}`
+              )
+            }
+          />
+
+          {status === 'COMPLETED' && (
+            <ListItemSecondaryAction>
+              <IconButton
+                aria-label="Go"
+                onClick={() => this.viewRecordingDetails(recording)}
+              >
+                <ArrowIcon />
+              </IconButton>
+            </ListItemSecondaryAction>
+          )}
         </ListItem>
       );
     });
+  }
+
+  renderRecordingsLists() {
+    return (
+      <Flex>
+        <Box flex={1}>
+          <ListContainer>
+            <Typography variant="h5" gutterBottom>
+              Completed
+            </Typography>
+
+            <List>{this.renderJobsByStatus('COMPLETED')}</List>
+          </ListContainer>
+        </Box>
+        <Box flex={1}>
+          <ListContainer>
+            <Box mb={4}>
+              <Typography variant="h5" gutterBottom>
+                In Progress
+              </Typography>
+
+              <List>{this.renderJobsByStatus('IN_PROGRESS')}</List>
+            </Box>
+
+            <Box mb={4}>
+              <Typography variant="h5" gutterBottom>
+                Failed
+              </Typography>
+
+              <List>{this.renderJobsByStatus('FAILED')}</List>
+            </Box>
+          </ListContainer>
+        </Box>
+      </Flex>
+    );
   }
 
   render() {
@@ -213,38 +277,7 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
           </Box>
         </Box>
 
-        <Box my={4}>
-          <Flex>
-            <Box flex={1}>
-              <ListContainer>
-                <Typography variant="h5" gutterBottom>
-                  Completed
-                </Typography>
-
-                <List>{this.renderJobsByStatus('COMPLETED')}</List>
-              </ListContainer>
-            </Box>
-            <Box flex={1}>
-              <ListContainer>
-                <Box mb={4}>
-                  <Typography variant="h5" gutterBottom>
-                    In Progress
-                  </Typography>
-
-                  <List>{this.renderJobsByStatus('IN_PROGRESS')}</List>
-                </Box>
-
-                <Box mb={4}>
-                  <Typography variant="h5" gutterBottom>
-                    Failed
-                  </Typography>
-
-                  <List>{this.renderJobsByStatus('FAILED')}</List>
-                </Box>
-              </ListContainer>
-            </Box>
-          </Flex>
-        </Box>
+        <Box my={4}>{this.renderRecordingsLists()}</Box>
       </Box>
     );
   }
