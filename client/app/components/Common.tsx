@@ -37,7 +37,6 @@ export const Text = styled(Box)`
 
 export const Header = styled(Text)`
   font-size: ${props => props.fontSize || '32px'};
-  font-weight: 500;
 `;
 
 export const Input = styled.input`

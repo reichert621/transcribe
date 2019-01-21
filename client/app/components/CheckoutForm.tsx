@@ -10,9 +10,10 @@ import {
   PostalCodeElement,
   injectStripe
 } from 'react-stripe-elements';
+import Button from '@material-ui/core/Button';
 // import StripeCheckout from 'react-stripe-checkout';
 import { createCharge, createSubscription } from '../helpers/payments';
-import { Box, Header, Button } from './Common';
+import { Box, Header } from './Common';
 
 type CheckoutFormProps = ReactStripeElements.InjectedStripeProps & {};
 type CheckoutFormState = {
@@ -108,11 +109,20 @@ class CheckoutForm extends React.Component<
         {/* <CardCVCElement style={style} /> */}
         {/* <PostalCodeElement style={style} /> */}
 
-        <Button my={4} mr={2} onClick={this.createSubscription}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={this.createSubscription}
+          style={{ marginRight: 8 }}
+        >
           Subscribe
         </Button>
 
-        <Button my={4} onClick={this.createCharge}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={this.createSubscription}
+        >
           Charge
         </Button>
       </Box>

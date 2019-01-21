@@ -6,6 +6,7 @@ import {
   Route,
   Redirect
 } from 'react-router-dom';
+import CssBaseline from '@material-ui/core/CssBaseline';
 import { logout } from './helpers/auth';
 import Register from './components/Register';
 import Login from './components/Login';
@@ -33,6 +34,7 @@ class App extends React.Component<AppProps, AppState> {
   render() {
     return (
       <Box>
+        <CssBaseline />
         <Router>
           <div className="app">
             <Switch>

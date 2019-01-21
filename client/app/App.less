@@ -1,5 +1,5 @@
 /* Fonts */
-@font-san-serif: 'Helvetica Neue', Arial, san-serif;
+@font-san-serif: 'Roboto', 'Helvetica Neue', Arial, san-serif;
 
 /* Colors */
 @white: #fff;
@@ -12,11 +12,11 @@
 html,
 body,
 .app {
-  background-color: @white;
   height: 100%;
   font-family: @font-san-serif;
   font-size: 16px;
   font-weight: 300;
+  line-height: 1.6;
   margin: 0;
 }
 
@@ -28,7 +28,9 @@ textarea {
 
 /* TODO: figure out best design for payment form */
 .StripeElement {
+  background: @white;
   border: 1px solid lightgray;
   border-radius: 4px;
+  margin-bottom: 8px;
   padding: 8px;
 }

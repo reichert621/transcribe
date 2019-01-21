@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "lib": ["es2015", "es2015.iterable"],
+    "lib": ["es2015", "es2015.iterable", "dom"],
     "moduleResolution": "node",
     "noImplicitAny": false,
     "outDir": "build",
@@ -11,10 +11,12 @@
       "body-parser",
       "cookie-parser",
       "cors",
+      "node",
       "express",
       "express-session",
       "lodash",
-      "passport"
+      "passport",
+      "superagent"
     ]
   }
 }

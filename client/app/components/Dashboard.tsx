@@ -3,6 +3,9 @@ import { RouteComponentProps, Link } from 'react-router-dom';
 import Dropzone from 'react-dropzone';
 import { groupBy } from 'lodash';
 import * as moment from 'moment';
+import Typography from '@material-ui/core/Typography';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
 import {
   Recording,
   TranscriptionStatus,
@@ -26,10 +29,10 @@ const UploadZone = styled(Box)`
   padding: 24px;
 
   &:hover {
-    background-color: #fafafa;
+    background-color: #fff;
   }
 
-  ${props => props.active && 'background-color: #fafafa;'}
+  ${props => props.active && 'background-color: #fff;'}
 `;
 
 class Dashboard extends React.Component<DashboardProps, DashboardState> {
