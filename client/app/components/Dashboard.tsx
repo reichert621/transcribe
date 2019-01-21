@@ -55,7 +55,6 @@ const UploadZone = styled(Box)`
 
 const ListContainer = styled(Paper)`
   padding: 32px 16px;
-  margin-right: 32px;
 `;
 
 class Dashboard extends React.Component<DashboardProps, DashboardState> {
@@ -237,7 +236,7 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
           </ListContainer>
         </Box>
         <Box flex={1}>
-          <ListContainer>
+          <ListContainer style={{ marginLeft: 32 }}>
             <Box mb={4}>
               <Typography variant="h5" gutterBottom>
                 In Progress
