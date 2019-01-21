@@ -13,7 +13,7 @@ import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import Recording from './components/Recording';
 import Payment from './components/Payment';
-import NewYorker from './components/NewYorker';
+import AudioPlayer from './components/AudioPlayer';
 import Sandbox from './components/Sandbox';
 import { Box, Button } from './components/Common';
 import './App.less';
@@ -45,7 +45,7 @@ class App extends React.Component<AppProps, AppState> {
               <Route path="/dashboard" component={Dashboard} />
               <Route path="/recording/:id" component={Recording} />
               <Route path="/payment" component={Payment} />
-              <Route path="/ny" component={NewYorker} />
+              <Route path="/ny" component={AudioPlayer} />
               <Route path="/sandbox" component={Sandbox} />
             </Switch>
           </div>
