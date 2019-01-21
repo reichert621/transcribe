@@ -1,6 +1,6 @@
 import * as AWS from 'aws-sdk';
 import * as Bluebird from 'bluebird';
-import { chunk, last, isObject } from 'lodash';
+import { chunk, first, last, isObject } from 'lodash';
 
 const { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY } = process.env;
 
@@ -106,8 +106,11 @@ export function parseTranscription(
 
       // Punctuations do not have start or end time
       const words = group.filter(item => item.type === 'pronunciation');
-      const startTime = words[0].start_time;
-      const endTime = last(words).end_time;
+      console.log('Words:', words);
+      const firstWord = first(words);
+      const lastWord = last(words);
+      const startTime = firstWord && firstWord.start_time;
+      const endTime = lastWord && lastWord.end_time;
 
       return { startTime, endTime, text };
     })

@@ -3,9 +3,22 @@ import { RouteComponentProps, Link } from 'react-router-dom';
 import Dropzone from 'react-dropzone';
 import { groupBy } from 'lodash';
 import * as moment from 'moment';
+import Avatar from '@material-ui/core/Avatar';
+import Button from '@material-ui/core/Button';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
+import Paper from '@material-ui/core/Paper';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
+import IconButton from '@material-ui/core/IconButton';
+import ReceiptIcon from '@material-ui/icons/Receipt';
+import HourglassIcon from '@material-ui/icons/HourglassFull';
+import ErrorIcon from '@material-ui/icons/Error';
 import {
   Recording,
   TranscriptionStatus,
@@ -25,14 +38,20 @@ type DashboardState = {
 };
 
 const UploadZone = styled(Box)`
+  border-radius: 2px;
   cursor: pointer;
-  padding: 24px;
+  padding: 64px 24px;
 
   &:hover {
-    background-color: #fff;
+    background-color: #fafafa;
   }
 
-  ${props => props.active && 'background-color: #fff;'}
+  ${props => props.active && 'background-color: #fafafa;'}
+`;
+
+const ListContainer = styled(Paper)`
+  padding: 32px 16px;
+  margin-right: 32px;
 `;
 
 class Dashboard extends React.Component<DashboardProps, DashboardState> {
@@ -95,28 +114,54 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
 
   renderUploadZone() {
     return (
-      <Dropzone onDrop={this.handleFileDrop}>
-        {({ getRootProps, getInputProps, isDragActive }) => (
-          <UploadZone {...getRootProps()} active={isDragActive}>
-            {/* TODO: specify all acceptable file types */}
-            <input {...getInputProps()} accept="video/mp4,audio/mp3" />
+      <Paper>
+        <Dropzone onDrop={this.handleFileDrop}>
+          {({ getRootProps, getInputProps, isDragActive }) => (
+            <UploadZone {...getRootProps()} active={isDragActive}>
+              {/* TODO: specify all acceptable file types */}
+              <input {...getInputProps()} accept="video/mp4,audio/mp3" />
 
-            {isDragActive ? (
-              <Text>Drop file!</Text>
-            ) : (
-              <Text>
-                Try dropping some files here, or click to select files to
-                upload.
-              </Text>
-            )}
-          </UploadZone>
-        )}
-      </Dropzone>
+              {isDragActive ? (
+                <Text>Drop file!</Text>
+              ) : (
+                <Text>
+                  Try dropping some files here, or click to select files to
+                  upload.
+                </Text>
+              )}
+            </UploadZone>
+          )}
+        </Dropzone>
+      </Paper>
     );
   }
 
+  getIconByStatus(status: TranscriptionStatus) {
+    switch (status) {
+      case 'COMPLETED':
+        return <ReceiptIcon />;
+      case 'IN_PROGRESS':
+        return <HourglassIcon />;
+      case 'FAILED':
+        return <ErrorIcon />;
+      default:
+        throw new Error(`Invalid status: ${status}`);
+    }
+  }
+
+  viewRecordingDetails = (recording: Recording) => {
+    const { id, transcription } = recording;
+
+    if (!transcription) {
+      return null;
+    }
+
+    return this.props.history.push(`/recording/${id}`);
+  };
+
   renderJobsByStatus(status: TranscriptionStatus) {
     const recordings = this.state.recordings[status];
+    const icon = this.getIconByStatus(status);
 
     // TODO: show loading/empty state
     if (!recordings || !recordings.length) {
@@ -128,19 +173,24 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
       const ts = moment(timestamp).format('MMM DD, h:mm a');
 
       return (
-        <Box key={key} mb={4}>
-          <Box p={1}>
-            {transcription ? (
-              <Link to={`/recording/${id}`}>{name}</Link>
-            ) : (
-              <Text>{name}</Text>
-            )}
-          </Box>
-
-          <Box p={1}>
-            <Text fontSize={12}>Created: {ts}</Text>
-          </Box>
-        </Box>
+        <ListItem
+          key={key}
+          button
+          onClick={() => this.viewRecordingDetails(recording)}
+        >
+          {/* <ListItemIcon>
+            <ReceiptIcon />
+          </ListItemIcon> */}
+          <ListItemAvatar>
+            <Avatar>{icon}</Avatar>
+          </ListItemAvatar>
+          <ListItemText primary={name} secondary={`Created: ${ts}`} />
+          {/* <ListItemSecondaryAction>
+            <IconButton aria-label="Go">
+              <ReceiptIcon />
+            </IconButton>
+          </ListItemSecondaryAction> */}
+        </ListItem>
       );
     });
   }
@@ -166,22 +216,32 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
         <Box my={4}>
           <Flex>
             <Box flex={1}>
-              <Header fontSize={3} mb={2}>
-                Completed
-              </Header>
-              {this.renderJobsByStatus('COMPLETED')}
+              <ListContainer>
+                <Typography variant="h5" gutterBottom>
+                  Completed
+                </Typography>
+
+                <List>{this.renderJobsByStatus('COMPLETED')}</List>
+              </ListContainer>
             </Box>
             <Box flex={1}>
-              <Header fontSize={3} mb={2}>
-                In Progress
-              </Header>
-              {this.renderJobsByStatus('IN_PROGRESS')}
-            </Box>
-            <Box flex={1}>
-              <Header fontSize={3} mb={2}>
-                Failed
-              </Header>
-              {this.renderJobsByStatus('FAILED')}
+              <ListContainer>
+                <Box mb={4}>
+                  <Typography variant="h5" gutterBottom>
+                    In Progress
+                  </Typography>
+
+                  <List>{this.renderJobsByStatus('IN_PROGRESS')}</List>
+                </Box>
+
+                <Box mb={4}>
+                  <Typography variant="h5" gutterBottom>
+                    Failed
+                  </Typography>
+
+                  <List>{this.renderJobsByStatus('FAILED')}</List>
+                </Box>
+              </ListContainer>
             </Box>
           </Flex>
         </Box>
