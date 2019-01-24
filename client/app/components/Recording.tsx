@@ -75,10 +75,6 @@ class RecordingPage extends React.Component<RecordingProps, RecordingState> {
                 </Box>
               );
             })}
-
-          <Box mt={80}>
-            <pre>{JSON.stringify(transcription, null, 2)}</pre>
-          </Box>
         </Box>
       </Box>
     );

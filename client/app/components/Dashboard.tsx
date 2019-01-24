@@ -225,8 +225,12 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
 
   renderRecordingsLists() {
     return (
-      <Flex>
-        <Box flex={1}>
+      <Flex
+        flexDirection={['column', 'column', 'row']}
+        justifyContent="space-between"
+        mx={-2}
+      >
+        <Box flex={1} m={2}>
           <ListContainer>
             <Typography variant="h5" gutterBottom>
               Completed
@@ -235,8 +239,8 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
             <List>{this.renderJobsByStatus('COMPLETED')}</List>
           </ListContainer>
         </Box>
-        <Box flex={1}>
-          <ListContainer style={{ marginLeft: 32 }}>
+        <Box flex={1} m={2}>
+          <ListContainer>
             <Box mb={4}>
               <Typography variant="h5" gutterBottom>
                 In Progress

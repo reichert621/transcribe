@@ -99,7 +99,7 @@ class CheckoutForm extends React.Component<
     const style = this.getStripeDefaultStyle();
 
     return (
-      <Box width={1 / 2}>
+      <Box width={[1, 3 / 4, 1 / 2]} maxWidth="400px">
         {/* <StripeCheckout token={this.onToken} stripeKey={STRIPE_KEY} /> */}
 
         <CardElement style={style} hidePostalCode={true} />

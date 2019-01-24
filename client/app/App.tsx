@@ -45,6 +45,7 @@ class App extends React.Component<AppProps, AppState> {
               <Route path="/dashboard" component={Dashboard} />
               <Route path="/recording/:id" component={Recording} />
               <Route path="/payment" component={Payment} />
+              <Route path="/player" component={AudioPlayer} />
               <Route path="/ny" component={AudioPlayer} />
               <Route path="/sandbox" component={Sandbox} />
             </Switch>

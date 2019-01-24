@@ -24,7 +24,7 @@ const AudioControlButton = (props: ButtonProps) => {
       variant="contained"
       size="small"
       color="primary"
-      style={style}
+      style={{ minWidth: 48, ...style }}
       onClick={onClick}
       {...rest}
     >
@@ -225,7 +225,7 @@ class AudioPlayer extends React.Component<AudioPlayerProps, AudioPlayerState> {
 
         <Tooltip title="Shortcut: L Key">
           <AudioControlButton
-            style={{ marginTop: 16, marginRight: 32 }}
+            style={{ marginTop: 16, marginRight: 16 }}
             onClick={() => this.handleIncSpeed(2.5)}
           >
             2.5x
@@ -240,7 +240,7 @@ class AudioPlayer extends React.Component<AudioPlayerProps, AudioPlayerState> {
       <Box>
         <Tooltip title="Shortcut: Left Arrow">
           <AudioControlButton
-            style={{ marginTop: 16, marginRight: 8 }}
+            style={{ marginTop: 16, marginRight: 8, marginLeft: 16 }}
             onClick={() => this.handleDecTime(15)}
           >
             -15 s
@@ -292,7 +292,7 @@ class AudioPlayer extends React.Component<AudioPlayerProps, AudioPlayerState> {
           }}
         />
 
-        <Flex>
+        <Flex flexDirection={['column', 'column', 'row']}>
           {this.renderAudioSpeedControls()}
           {this.renderAudioTimeControls()}
         </Flex>

@@ -7,7 +7,7 @@ import Icon from '@material-ui/core/Icon';
 import Typography from '@material-ui/core/Typography';
 import styled from 'styled-components';
 import { register } from '../helpers/auth';
-import { Box, Header, Input } from './Common';
+import { Box, Header, Container } from './Common';
 
 type RegisterProps = RouteComponentProps<{}> & {};
 type RegisterState = {
@@ -15,8 +15,7 @@ type RegisterState = {
   password: string;
 };
 
-const Container = styled(Paper)`
-  padding: 32px;
+const RegisterContainer = styled(Container)`
   margin: 0 auto;
   max-width: 400px;
 `;
@@ -46,8 +45,8 @@ class Register extends React.Component<RegisterProps, RegisterState> {
 
   render() {
     return (
-      <Box m={5}>
-        <Container>
+      <Box mx={[3, 4, 5]} my={[4, 5]}>
+        <RegisterContainer p={[3, 4, 4]}>
           <Header mb={2}>Register</Header>
 
           <form onSubmit={this.handleSubmit}>
@@ -93,7 +92,7 @@ class Register extends React.Component<RegisterProps, RegisterState> {
               <Link to="/login">Already have an acccount? Log in here.</Link>
             </Typography>
           </Box>
-        </Container>
+        </RegisterContainer>
       </Box>
     );
   }

@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import Paper from '@material-ui/core/Paper';
 import {
   space,
   color,
@@ -53,4 +54,9 @@ export const Button = styled.button`
   ${fontSize}
   ${borders}
   ${color}
+`;
+
+export const Container = styled(Paper)`
+  ${space}
+  ${width}
 `;

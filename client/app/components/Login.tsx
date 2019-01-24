@@ -7,7 +7,7 @@ import Icon from '@material-ui/core/Icon';
 import Typography from '@material-ui/core/Typography';
 import styled from 'styled-components';
 import { login } from '../helpers/auth';
-import { Box, Header, Input } from './Common';
+import { Box, Header, Container } from './Common';
 
 type LoginProps = RouteComponentProps<{}> & {};
 type LoginState = {
@@ -15,8 +15,7 @@ type LoginState = {
   password: string;
 };
 
-const Container = styled(Paper)`
-  padding: 32px;
+const LoginContainer = styled(Container)`
   margin: 0 auto;
   max-width: 400px;
 `;
@@ -46,8 +45,8 @@ class Login extends React.Component<LoginProps, LoginState> {
 
   render() {
     return (
-      <Box m={5}>
-        <Container>
+      <Box mx={[3, 4, 5]} my={[4, 5]}>
+        <LoginContainer p={[3, 4, 4]}>
           <Header mb={2}>Welcome!</Header>
 
           <form onSubmit={this.handleSubmit}>
@@ -93,7 +92,7 @@ class Login extends React.Component<LoginProps, LoginState> {
               <Link to="/register">Need an account? Sign up here.</Link>
             </Typography>
           </Box>
-        </Container>
+        </LoginContainer>
       </Box>
     );
   }
