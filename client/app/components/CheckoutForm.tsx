@@ -118,11 +118,7 @@ class CheckoutForm extends React.Component<
           Subscribe
         </Button>
 
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={this.createSubscription}
-        >
+        <Button variant="contained" color="primary" onClick={this.createCharge}>
           Charge
         </Button>
       </Box>
