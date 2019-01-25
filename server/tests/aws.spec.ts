@@ -1,9 +1,22 @@
 import { describe, it } from 'mocha';
 import { assert } from 'chai';
 import { getTestTranscription } from './utils';
-import { parseTranscription } from '../aws';
+import { formatFileName, parseTranscription } from '../aws';
 
 describe('aws', () => {
+  describe('formatFileName', () => {
+    it('formats file names correctly', () => {
+      const f1 = '123-podcast.mp3';
+      const f2 = '123 podcast.mp3';
+      const f3 = '   123   podcast.mp3   ';
+      const expected = '123-podcast.mp3';
+
+      assert.equal(formatFileName(f1), expected);
+      assert.equal(formatFileName(f2), expected);
+      assert.equal(formatFileName(f3), expected);
+    });
+  });
+
   describe('parseTranscription', () => {
     it('parses valid transcriptions', () => {
       const text = 'This is a test. Hello world!';

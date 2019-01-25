@@ -34,6 +34,14 @@ export type AwsTranscription = {
   jobName: string;
 };
 
+export const formatFileName = (fileName: string) => {
+  return fileName
+    .trim()
+    .split(' ')
+    .filter(str => str && str.length)
+    .join('-');
+};
+
 // fileUri format: 1547344263217-podcast-snippet.mp3
 export function startTranscription(fileName: string) {
   const fileUri = `${awsPath + bucketName}/${fileName}`;

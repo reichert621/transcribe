@@ -3,6 +3,7 @@ import { first } from 'lodash';
 import { M, Recording } from '../index';
 import {
   AwsTranscription,
+  formatFileName,
   startTranscription,
   listTranscriptionJobs,
   getTranscription,
@@ -90,7 +91,8 @@ export default {
   async create(req: Request, res: Response) {
     try {
       const { id: userId } = req.user;
-      const { fileName: name } = req.body;
+      const { fileName } = req.body;
+      const name = formatFileName(fileName);
       // TODO should check start transcription for status
       const recording = await Recording.create({
         name,
