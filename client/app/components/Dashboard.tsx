@@ -25,6 +25,7 @@ import LinearProgress from '@material-ui/core/LinearProgress';
 import {
   Recording,
   TranscriptionStatus,
+  formatFileName,
   createTranscriptionJob,
   fetchTranscriptionJobStatuses,
   getSignedUrl,
@@ -95,8 +96,9 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
     this.setState({ isUploading: true });
 
     const [file] = files;
-    const fileName = `${+new Date()}-${file.name}`;
-    const contentType = file.type;
+    const { name = '', type: contentType } = file;
+    const formatted = formatFileName(name);
+    const fileName = `${+new Date()}-${formatted}`;
 
     return getSignedUrl(fileName, contentType)
       .then(url => {

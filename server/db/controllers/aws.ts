@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
-import { sign, listTranscriptionJobs } from '../../aws';
+import { sign, formatFileName, listTranscriptionJobs } from '../../aws';
 import { handleError } from './utils';
 
 export default {
   getSignedUrl(req: Request, res: Response) {
     const { fileName, contentType } = req.query;
+    const name = formatFileName(fileName);
 
-    return sign(fileName, contentType)
+    return sign(name, contentType)
       .then(signedUrl => res.json({ signedUrl }))
       .catch(err => handleError(res, err));
   },

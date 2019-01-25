@@ -15,6 +15,14 @@ export type Transcription = {
   textByTime: { startTime: number; endTime?: number; text: string }[];
 };
 
+export const formatFileName = (fileName: string) => {
+  return fileName
+    .trim()
+    .split(' ')
+    .filter(str => str && str.length)
+    .join('-');
+};
+
 export const fetchRecordings = (): Promise<Recording[]> => {
   return request.get('/api/recordings').then(res => res.body.recordings);
 };
