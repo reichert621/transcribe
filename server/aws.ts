@@ -57,10 +57,10 @@ export function startTranscription(fileName: string) {
 export function listTranscriptionJobs(
   fileName?: string
 ): Promise<AWS.TranscribeService.TranscriptionJobSummary[]> {
-  const params = {
-    JobNameContains: fileName,
-    MaxResults: 100
-  };
+  // TODO: clean up
+  const sanitizedJobName =
+    fileName && fileName.length ? first(fileName.split(' ')) : undefined;
+  const params = { JobNameContains: sanitizedJobName, MaxResults: 100 };
 
   return transcribeService
     .listTranscriptionJobs(params)

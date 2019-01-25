@@ -69,6 +69,11 @@ export const fetchAudioUrl = url => {
         .attr('src');
       console.log('Found:', audio);
 
+      // TODO: check elements for href/src attributes containing audio file
+      // const arr = Array.from(document.getElementsByTagName('a'))
+      //   .map(a => a.href)
+      //   .filter(href => href.includes('mp3'));
+
       return audio;
     } else {
       // Only handle audio and html files for now
