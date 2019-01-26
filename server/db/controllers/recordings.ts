@@ -80,12 +80,18 @@ export default {
     }
   },
 
-  findById(req: Request, res: Response) {
-    const { id } = req.params;
+  async findById(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      let recording = await Recording.findById(id);
 
-    return Recording.findById(id)
-      .then(recording => res.json({ recording }))
-      .catch(err => handleError(res, err));
+      if (!recording.paid) {
+        recording.transcription = null;
+      }
+      return res.json({ recording });
+    } catch (err) {
+      handleError(res, err);
+    }
   },
 
   async create(req: Request, res: Response) {

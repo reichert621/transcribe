@@ -9,6 +9,7 @@ export type Credentials = {
   password?: string;
 };
 
+const DEFAULT_CREDITS: number = 10;
 const reject = (msg: string) => Promise.reject(new Error(msg));
 
 const User = () => knex('users');
@@ -53,6 +54,7 @@ const sanitized = (params: M.User) => {
 
   return Object.assign({}, params, {
     salt,
+    credits: DEFAULT_CREDITS,
     password: getHashed(password, salt)
   });
 };
