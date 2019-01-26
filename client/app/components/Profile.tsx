@@ -5,6 +5,7 @@ import { Typography } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
+import Snackbar from '@material-ui/core/Snackbar';
 import { Box, Flex, Container, Header } from './Common';
 import { User, fetchCurrentUser } from '../helpers/auth';
 import { STRIPE_PUBLIC_KEY } from '../helpers/payments';
@@ -14,6 +15,7 @@ import NavBar from './NavBar';
 type ProfileProps = RouteComponentProps<{}> & {};
 type ProfileState = {
   user: User;
+  showSuccessMessage: boolean;
 };
 
 type Product = {
@@ -27,12 +29,14 @@ class Profile extends React.Component<ProfileProps, ProfileState> {
   constructor(props: ProfileProps) {
     super(props);
 
-    this.state = {
-      user: null
-    };
+    this.state = { user: null, showSuccessMessage: false };
   }
 
   componentDidMount() {
+    return this.fetchCurrentUser();
+  }
+
+  fetchCurrentUser = () => {
     return fetchCurrentUser()
       .then(({ user }) => {
         this.setState({ user });
@@ -40,7 +44,15 @@ class Profile extends React.Component<ProfileProps, ProfileState> {
       .catch(err => {
         console.log('Error fetching current user!', err);
       });
-  }
+  };
+
+  handlePurchaseSuccess = () => {
+    this.setState({ showSuccessMessage: true });
+
+    return this.fetchCurrentUser().then(() => {
+      setTimeout(() => this.setState({ showSuccessMessage: false }), 5000);
+    });
+  };
 
   renderProductOption(product: Product) {
     const { tier, credits, price } = product;
@@ -57,7 +69,7 @@ class Profile extends React.Component<ProfileProps, ProfileState> {
   }
 
   render() {
-    const { user } = this.state;
+    const { user, showSuccessMessage } = this.state;
 
     if (!user) return null;
 
@@ -81,12 +93,22 @@ class Profile extends React.Component<ProfileProps, ProfileState> {
             <StripeProvider apiKey={STRIPE_PUBLIC_KEY}>
               <Box>
                 <Elements>
-                  <CheckoutForm email={email} />
+                  <CheckoutForm
+                    email={email}
+                    onPurchaseSuccess={this.handlePurchaseSuccess}
+                  />
                 </Elements>
               </Box>
             </StripeProvider>
           </Container>
         </Box>
+
+        <Snackbar
+          anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
+          open={showSuccessMessage}
+          ContentProps={{ 'aria-describedby': 'success-id' }}
+          message={<span id="success-id">Purchase successful!</span>}
+        />
       </React.Fragment>
     );
   }

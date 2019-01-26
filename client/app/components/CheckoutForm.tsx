@@ -25,19 +25,25 @@ import { Box, Flex } from './Common';
 
 type CheckoutFormProps = ReactStripeElements.InjectedStripeProps & {
   email: string;
+  onPurchaseSuccess?: () => void;
 };
 type CheckoutFormState = {
   productId: string;
+  isPurchasing: boolean;
 };
+
+const noop = () => true;
 
 class CheckoutForm extends React.Component<
   CheckoutFormProps,
   CheckoutFormState
 > {
+  element: stripe.elements.Element = null;
+
   constructor(props: CheckoutFormProps) {
     super(props);
 
-    this.state = { productId: '' };
+    this.state = { productId: '', isPurchasing: false };
   }
 
   getStripeDefaultStyle() {
@@ -73,6 +79,8 @@ class CheckoutForm extends React.Component<
   };
 
   createCharge = (token?: any) => {
+    this.setState({ isPurchasing: true });
+    const { onPurchaseSuccess = noop } = this.props;
     // // Only for StripeCheckout
     // const { id: tokenId } = token;
     const { productId } = this.state;
@@ -83,9 +91,13 @@ class CheckoutForm extends React.Component<
       })
       .then(res => {
         console.log('Successfully created charge!', res);
+        this.element.clear(); // Reset form
+        this.setState({ isPurchasing: false, productId: '' });
       })
+      .then(() => onPurchaseSuccess())
       .catch(err => {
         console.log('Error creating charge!', err);
+        this.setState({ isPurchasing: false });
       });
   };
 
@@ -94,7 +106,7 @@ class CheckoutForm extends React.Component<
   };
 
   render() {
-    const { productId } = this.state;
+    const { productId, isPurchasing } = this.state;
     const style = this.getStripeDefaultStyle();
 
     return (
@@ -103,7 +115,12 @@ class CheckoutForm extends React.Component<
 
         <Flex>
           <Box style={{ minWidth: 400, paddingTop: 14 }} mr={4}>
-            <CardElement style={style} hidePostalCode={true} />
+            <CardElement
+              style={style}
+              onReady={ref => (this.element = ref)}
+              hidePostalCode={true}
+              disabled={isPurchasing}
+            />
           </Box>
 
           <FormControl style={{ minWidth: 240 }}>
@@ -111,6 +128,7 @@ class CheckoutForm extends React.Component<
             <Select
               value={productId}
               onChange={e => this.handleSelectProduct(e)}
+              disabled={isPurchasing}
               inputProps={{ name: 'product', id: 'product' }}
             >
               <MenuItem value="">None</MenuItem>
@@ -136,9 +154,10 @@ class CheckoutForm extends React.Component<
           <Button
             variant="contained"
             color="primary"
+            disabled={isPurchasing}
             onClick={this.createCharge}
           >
-            Purchase Credits
+            {isPurchasing ? 'Purchasing...' : 'Purchase Credits'}
           </Button>
         </Box>
       </Box>
