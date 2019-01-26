@@ -122,5 +122,6 @@ export default {
   create,
   register,
   authenticate,
+  formatted,
   verifyUser
 };

@@ -12,6 +12,16 @@ export default {
     });
   },
 
+  me(req: Request, res: Response) {
+    const { user } = req;
+
+    if (!user || !user.id) {
+      return handleError(res, new Error('Not authenticated!'));
+    }
+
+    return res.json({ user: User.formatted(user) });
+  },
+
   login(req: Request, res: Response) {
     const credentials = req.body;
 

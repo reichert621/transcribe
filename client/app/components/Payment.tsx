@@ -15,26 +15,15 @@ class Payment extends React.Component<PaymentProps, PaymentState> {
     this.state = {};
   }
 
-  componentDidMount() {
-    console.log('Fetching balance!');
-    return fetchBalance()
-      .then(res => {
-        console.log('Successfully retrieved balance!', res);
-      })
-      .catch(err => {
-        console.log('Error retrieving balance!', err);
-      });
-  }
-
   render() {
     return (
       <Box p={4}>
-        <Header my={4}>Payment</Header>
+        <Header my={4}>Payment Test</Header>
 
         <StripeProvider apiKey={STRIPE_PUBLIC_KEY}>
           <Box>
             <Elements>
-              <CheckoutForm />
+              <CheckoutForm email="alex@alex.com" />
             </Elements>
           </Box>
         </StripeProvider>

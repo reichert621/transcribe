@@ -31,6 +31,7 @@ import {
   getSignedUrl,
   uploadToS3
 } from '../helpers/recordings';
+import NavBar from './NavBar';
 import { Flex, Box, Text, Header } from './Common';
 import styled from 'styled-components';
 
@@ -269,21 +270,25 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
 
     // TODO: improve design (obviously) and split out components as they grow
     return (
-      <Box p={4}>
-        <Box my={4}>
-          <Header>Dashboard</Header>
+      <React.Fragment>
+        <NavBar />
 
-          <Box mt={4}>
-            {isUploading ? (
-              <Text p={24}>Uploading...</Text>
-            ) : (
-              this.renderUploadZone()
-            )}
+        <Box p={4}>
+          <Box my={4}>
+            <Header>Dashboard</Header>
+
+            <Box mt={4}>
+              {isUploading ? (
+                <Text p={24}>Uploading...</Text>
+              ) : (
+                this.renderUploadZone()
+              )}
+            </Box>
           </Box>
-        </Box>
 
-        <Box my={4}>{this.renderRecordingsLists()}</Box>
-      </Box>
+          <Box my={4}>{this.renderRecordingsLists()}</Box>
+        </Box>
+      </React.Fragment>
     );
   }
 }
