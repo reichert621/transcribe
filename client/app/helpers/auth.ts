@@ -3,6 +3,7 @@ import * as request from 'superagent';
 export type User = {
   id: number;
   email: string;
+  credits?: number;
 };
 
 export type Credentials = {
@@ -15,6 +16,10 @@ export const register = (credentials: Credentials): Promise<User> => {
     .post('/api/register')
     .send(credentials)
     .then(res => res.body);
+};
+
+export const fetchCurrentUser = (): Promise<any> => {
+  return request.get('/api/me').then(res => res.body);
 };
 
 export const login = (credentials: Credentials): Promise<User> => {

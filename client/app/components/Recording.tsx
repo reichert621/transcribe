@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { Box, Header, Input } from './Common';
+import NavBar from './NavBar';
 import { Recording, fetchRecording } from '../helpers/recordings';
 
 type RecordingProps = RouteComponentProps<{ id: number }> & {};
@@ -42,41 +43,45 @@ class RecordingPage extends React.Component<RecordingProps, RecordingState> {
     const { transcript, textByTime = [] } = transcription;
 
     return (
-      <Box p={4}>
-        <Header my={4}>{name}</Header>
+      <React.Fragment>
+        <NavBar />
 
-        <Box>
-          <Box>Full text: {transcript}</Box>
+        <Box p={4}>
+          <Header my={4}>{name}</Header>
 
-          <Header my={4}>Search</Header>
+          <Box>
+            <Box>Full text: {transcript}</Box>
 
-          <Input
-            mb={2}
-            type="text"
-            placeholder="Search"
-            value={query}
-            onChange={(e: React.FormEvent<HTMLInputElement>) =>
-              this.setState({ query: e.currentTarget.value })
-            }
-          />
+            <Header my={4}>Search</Header>
 
-          {textByTime
-            .filter(({ text }) => {
-              return (
-                text &&
-                text.length &&
-                text.toLowerCase().includes(query.toLowerCase())
-              );
-            })
-            .map(({ text, startTime }, key) => {
-              return (
-                <Box key={key}>
-                  {startTime} - {text}
-                </Box>
-              );
-            })}
+            <Input
+              mb={2}
+              type="text"
+              placeholder="Search"
+              value={query}
+              onChange={(e: React.FormEvent<HTMLInputElement>) =>
+                this.setState({ query: e.currentTarget.value })
+              }
+            />
+
+            {textByTime
+              .filter(({ text }) => {
+                return (
+                  text &&
+                  text.length &&
+                  text.toLowerCase().includes(query.toLowerCase())
+                );
+              })
+              .map(({ text, startTime }, key) => {
+                return (
+                  <Box key={key}>
+                    {startTime} - {text}
+                  </Box>
+                );
+              })}
+          </Box>
         </Box>
-      </Box>
+      </React.Fragment>
     );
   }
 }

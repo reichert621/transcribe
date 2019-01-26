@@ -14,6 +14,7 @@ import Dashboard from './components/Dashboard';
 import Recording from './components/Recording';
 import Payment from './components/Payment';
 import AudioPlayer from './components/AudioPlayer';
+import Profile from './components/Profile';
 import Sandbox from './components/Sandbox';
 import { Box, Button } from './components/Common';
 import './App.less';
@@ -44,6 +45,7 @@ class App extends React.Component<AppProps, AppState> {
               <Route path="/login" component={Login} />
               <Route path="/dashboard" component={Dashboard} />
               <Route path="/recording/:id" component={Recording} />
+              <Route path="/profile" component={Profile} />
               <Route path="/payment" component={Payment} />
               <Route path="/player" component={AudioPlayer} />
               <Route path="/ny" component={AudioPlayer} />

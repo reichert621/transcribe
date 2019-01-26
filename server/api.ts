@@ -11,6 +11,7 @@ api.get('/ping', (req, res) => res.json({ message: 'pong' }));
 api.post('/register', users.register);
 api.post('/login', auth, users.login);
 api.delete('/logout', users.logout);
+api.get('/me', users.me);
 // Recording endpoints
 api.get('/recordings', isAuthenticated, recordings.fetch);
 api.get('/recordings/:id', isAuthenticated, recordings.findById);
