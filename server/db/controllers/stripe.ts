@@ -1,50 +1,36 @@
 import { Request, Response } from 'express';
-import {
-  fetchBalance,
-  createCharge,
-  generateExistingTestSubscription
-} from '../../stripe';
+import { createCharge } from '../../stripe';
 import { handleError } from './utils';
+import { getProduct, PRODUCTS } from '../models/product';
+import { User } from '../index';
 
 // TODO: rename file to 'payments'?
 export default {
-  balance(req: Request, res: Response) {
-    return fetchBalance()
-      .then(result => {
-        console.log('Stripe balance success!', result);
-        return res.json({ result });
-      })
-      .catch(err => {
-        console.log('Stripe balance error!', err);
-        return handleError(res, err);
-      });
+  fetchProducts(req: Request, res: Response) {
+    return res.json({ products: PRODUCTS });
   },
 
-  charge(req: Request, res: Response) {
-    const { token } = req.body;
+  async charge(req: Request, res: Response) {
+    try {
+      const { token, productName } = req.body;
+      const userId = req.user.id;
 
-    return createCharge(token)
-      .then(result => {
-        console.log('Stripe charge success!', result);
-        return res.json({ result });
-      })
-      .catch(err => {
-        console.log('Stripe charge error!', err);
-        return handleError(res, err);
-      });
-  },
+      if (!productName) {
+        return res.status(400).end('Missing ProductName');
+      }
 
-  subscription(req: Request, res: Response) {
-    const { email, token, planId } = req.body;
+      const product = getProduct(productName);
+      if (!product) {
+        return res.status(400).end('Invalid product request');
+      }
 
-    return generateExistingTestSubscription(email, token, planId)
-      .then(result => {
-        console.log('Stripe subscription success!', result);
-        return res.json({ result });
-      })
-      .catch(err => {
-        console.log('Stripe subscription error!', err);
-        return handleError(res, err);
-      });
+      await createCharge(token, product);
+      await User.addCredit(userId, product.credits);
+
+      return res.json({ success: true });
+    } catch (err) {
+      console.log('Stripe charge error!', err);
+      return handleError(res, err);
+    }
   }
 };

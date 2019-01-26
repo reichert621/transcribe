@@ -96,6 +96,12 @@ const register = ({ email, password }: Credentials) => {
     .then(user => formatted(user));
 };
 
+const addCredit = (id: number, credits: number) => {
+  return findById(id)
+    .increment('credits', credits)
+    .then(() => findById(id));
+};
+
 const authenticate = ({ email, password }: Credentials) => {
   if (!email) return reject('Email is required!');
   if (!password) return reject('Password is required!');
@@ -106,6 +112,7 @@ const authenticate = ({ email, password }: Credentials) => {
 };
 
 export default {
+  addCredit,
   fetch,
   findOne,
   findById,

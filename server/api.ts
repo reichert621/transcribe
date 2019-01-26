@@ -13,15 +13,14 @@ api.post('/login', auth, users.login);
 api.delete('/logout', users.logout);
 // Recording endpoints
 api.get('/recordings', isAuthenticated, recordings.fetch);
-api.get('/recordings/:id', isAuthenticated, recordings.findById);
+api.get('/recordings/:id', recordings.findById);
 api.post('/recordings', isAuthenticated, recordings.create);
 // AWS endpoints
 api.get('/signed-url', isAuthenticated, aws.getSignedUrl);
 api.get('/transcription-jobs', isAuthenticated, aws.listTranscriptionJobs);
 // Stripe endpoints
 api.post('/charges', stripe.charge);
-api.post('/subscriptions', stripe.subscription);
-api.get('/balance', isAuthenticated, stripe.balance);
+api.get('/products', isAuthenticated, stripe.fetchProducts);
 // Misc.
 api.get('/scraper/audio', ny.getAudioUrl);
 
