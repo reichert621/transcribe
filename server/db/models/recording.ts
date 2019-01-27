@@ -1,4 +1,4 @@
-import { first } from 'lodash';
+import { first, last } from 'lodash';
 import knex from '../knex';
 import M from './types';
 
@@ -9,6 +9,7 @@ type RecordingParams = {
   transcription?: any;
   userId?: number;
   status?: 'IN_PROGRESS' | 'COMPLETED' | 'FAILED';
+  paid?: boolean;
 };
 
 const Recording = () => knex('recordings');
@@ -58,6 +59,19 @@ const destroy = (id: number) => {
   return findById(id).delete();
 };
 
+const calculateDuration = (recording: M.Recording) => {
+  if (!recording || !recording.transcription) {
+    return 0;
+  }
+  const { transcription } = recording;
+  const { textByTime } = transcription;
+  const times = textByTime
+    .map(({ endTime }) => Number(endTime))
+    .sort((a, b) => a - b);
+
+  return last(times);
+};
+
 export default {
   fetch,
   findById,
@@ -65,5 +79,6 @@ export default {
   update,
   destroy,
   findOne,
-  updateByName
+  updateByName,
+  calculateDuration
 };

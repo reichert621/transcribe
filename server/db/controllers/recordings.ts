@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { first } from 'lodash';
-import { M, Recording } from '../index';
+import { M, Recording, User } from '../index';
 import {
   AwsTranscription,
   formatFileName,
@@ -82,13 +82,32 @@ export default {
 
   async findById(req: Request, res: Response) {
     try {
-      const { id } = req.params;
-      let recording = await Recording.findById(id);
+      const { id: recordingId } = req.params;
+      const { id: userId, credits } = req.user;
+      const recording = await Recording.findById(recordingId);
 
-      if (!recording.paid) {
-        recording.transcription = null;
+      if (recording.paid) {
+        console.log('Already paid! Returning recording.');
+        return res.json({ recording });
+      } else {
+        const duration = Recording.calculateDuration(recording);
+        const cost = User.convertSecondsToCredits(duration);
+        console.log({ duration, credits, cost });
+
+        if (credits >= cost) {
+          console.log(
+            `Deducting ${cost} credits from ${credits} and marking recording as paid!`
+          );
+          await User.deductCredit(userId, cost);
+          const result = await Recording.update(recordingId, { paid: true });
+
+          return res.json({ recording: result });
+        }
+
+        return res.json({
+          recording: { ...recording, transcription: null }
+        });
       }
-      return res.json({ recording });
     } catch (err) {
       handleError(res, err);
     }

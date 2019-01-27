@@ -46,11 +46,10 @@ class NavBar extends React.Component<NavBarProps, NavBarState> {
       <div>
         <AppBar position="static">
           <Toolbar>
-            {/* <IconButton color="inherit" aria-label="Menu">
-              <MenuIcon />
-            </IconButton> */}
             <Typography variant="h6" color="inherit" style={{ flexGrow: 1 }}>
-              Transcriptions
+              <NavLink to="/" style={{ color: 'white' }}>
+                Transcriptions
+              </NavLink>
             </Typography>
             <div>
               <IconButton
@@ -64,8 +63,8 @@ class NavBar extends React.Component<NavBarProps, NavBarState> {
               <Menu
                 id="menu-appbar"
                 anchorEl={anchorEl}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                transformOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                 open={open}
                 onClose={this.handleClose}
               >

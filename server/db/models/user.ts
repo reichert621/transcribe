@@ -98,12 +98,6 @@ const register = ({ email, password }: Credentials) => {
     .then(user => formatted(user));
 };
 
-const addCredit = (id: number, credits: number) => {
-  return findById(id)
-    .increment('credits', credits)
-    .then(() => findById(id));
-};
-
 const authenticate = ({ email, password }: Credentials) => {
   if (!email) return reject('Email is required!');
   if (!password) return reject('Password is required!');
@@ -113,8 +107,30 @@ const authenticate = ({ email, password }: Credentials) => {
     .then(user => formatted(user));
 };
 
+const convertSecondsToCredits = (seconds: number) => {
+  if (seconds < 1) {
+    return 0;
+  }
+
+  const minutes = Math.round(seconds / 60);
+  const credits = Math.round(minutes / 5) || 1;
+
+  return credits;
+};
+
+const addCredit = (id: number, credits: number) => {
+  return findById(id)
+    .increment('credits', credits)
+    .then(() => findById(id));
+};
+
+const deductCredit = (id: number, credits: number) => {
+  return findById(id)
+    .decrement('credits', credits)
+    .then(() => findById(id));
+};
+
 export default {
-  addCredit,
   fetch,
   findOne,
   findById,
@@ -123,5 +139,8 @@ export default {
   register,
   authenticate,
   formatted,
-  verifyUser
+  verifyUser,
+  convertSecondsToCredits,
+  addCredit,
+  deductCredit
 };

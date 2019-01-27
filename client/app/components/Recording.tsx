@@ -23,7 +23,7 @@ class RecordingPage extends React.Component<RecordingProps, RecordingState> {
 
     return fetchRecording(id)
       .then(recording => {
-        console.log('Recording response:', recording);
+        console.log('Recording:', recording);
         this.setState({ recording });
       })
       .catch(err => {
@@ -33,7 +33,6 @@ class RecordingPage extends React.Component<RecordingProps, RecordingState> {
 
   render() {
     const { recording, query } = this.state;
-    console.log('recording!', recording);
 
     if (!recording) {
       // TODO: render loading
