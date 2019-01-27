@@ -89,12 +89,22 @@ class NavBar extends React.Component<NavBarProps, NavBarState> {
                 open={open}
                 onClose={this.handleClose}
               >
-                <MenuItem onClick={this.handleClose}>
-                  <NavLink to="/profile">My Account</NavLink>
-                </MenuItem>
-                <MenuItem onClick={this.handleLogout}>
-                  <NavLink to="/login">Logout</NavLink>
-                </MenuItem>
+                <NavLink to="/profile">
+                  <MenuItem
+                    style={{ minWidth: 120 }}
+                    onClick={this.handleClose}
+                  >
+                    My Account
+                  </MenuItem>
+                </NavLink>
+                <NavLink to="/login">
+                  <MenuItem
+                    style={{ minWidth: 120 }}
+                    onClick={this.handleLogout}
+                  >
+                    Logout
+                  </MenuItem>
+                </NavLink>
               </Menu>
             </Flex>
           </Toolbar>

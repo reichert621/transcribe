@@ -106,8 +106,8 @@ class Profile extends React.Component<ProfileProps, ProfileState> {
         <Snackbar
           anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
           open={showSuccessMessage}
-          ContentProps={{ 'aria-describedby': 'success-id' }}
-          message={<span id="success-id">Purchase successful!</span>}
+          ContentProps={{ 'aria-describedby': 'purchase-success-id' }}
+          message={<span id="purchase-success-id">Purchase successful!</span>}
         />
       </React.Fragment>
     );

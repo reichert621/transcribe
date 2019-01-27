@@ -6,12 +6,10 @@ import * as moment from 'moment';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import ListItemText from '@material-ui/core/ListItemText';
 import Paper from '@material-ui/core/Paper';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
+import Snackbar from '@material-ui/core/Snackbar';
 import Typography from '@material-ui/core/Typography';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -20,6 +18,7 @@ import ReceiptIcon from '@material-ui/icons/Receipt';
 import HourglassIcon from '@material-ui/icons/HourglassFull';
 import ErrorIcon from '@material-ui/icons/Error';
 import ArrowIcon from '@material-ui/icons/ArrowForward';
+import UploadIcon from '@material-ui/icons/CloudUpload';
 import Spinner from '@material-ui/core/CircularProgress';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import {
@@ -33,7 +32,7 @@ import {
 } from '../helpers/recordings';
 import NavBar from './NavBar';
 import { Flex, Box, Text, Header } from './Common';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 type DashboardProps = RouteComponentProps<{}> & {};
 type DashboardState = {
@@ -41,18 +40,27 @@ type DashboardState = {
   files: File[];
   isLoading: boolean;
   isUploading: boolean;
+  showSuccessMessage: boolean;
 };
 
 const UploadZone = styled(Box)`
   border-radius: 2px;
   cursor: pointer;
+  min-height: 208px;
   padding: 64px 32px;
+  text-align: center;
 
   &:hover {
-    background-color: #fafafa;
+    background-color: #e3f2fd;
+    opacity: 0.6;
   }
 
-  ${props => props.active && 'background-color: #fafafa;'}
+  ${props =>
+    props.active &&
+    css`
+      background-color: #e3f2fd;
+      opacity: 0.6;
+    `}
 `;
 
 const ListContainer = styled(Paper)`
@@ -67,7 +75,8 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
       recordings: {},
       files: [],
       isLoading: true,
-      isUploading: false
+      isUploading: false,
+      showSuccessMessage: false
     };
   }
 
@@ -112,9 +121,12 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
       })
       .then(res => {
         console.log('Upload results:', res);
-        this.setState({ isUploading: false });
+        this.setState({ isUploading: false, showSuccessMessage: true });
       })
       .then(() => this.fetchRecordings())
+      .then(() => {
+        setTimeout(() => this.setState({ showSuccessMessage: false }), 5000);
+      })
       .catch(err => {
         console.log('Oh shit!', err);
         this.setState({ isUploading: false });
@@ -124,11 +136,14 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
   renderUploadZone() {
     return (
       <Paper>
-        <Dropzone onDrop={this.handleFileDrop}>
+        <Dropzone onDrop={this.handleFileDrop} accept="video/mp4,audio/mp3">
           {({ getRootProps, getInputProps, isDragActive }) => (
             <UploadZone {...getRootProps()} active={isDragActive}>
               {/* TODO: specify all acceptable file types */}
               <input {...getInputProps()} accept="video/mp4,audio/mp3" />
+              <Box mb={2}>
+                <UploadIcon style={{ fontSize: 40 }} color="primary" />
+              </Box>
 
               {isDragActive ? (
                 <Text>Drop file!</Text>
@@ -140,6 +155,24 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
             </UploadZone>
           )}
         </Dropzone>
+      </Paper>
+    );
+  }
+
+  renderUploadPending() {
+    return (
+      <Paper>
+        <UploadZone>
+          <Box mb={2}>
+            <Spinner />
+          </Box>
+
+          <Text>Uploading...</Text>
+
+          {/* <Box mt={4} px={4}>
+            <LinearProgress />
+          </Box> */}
+        </UploadZone>
       </Paper>
     );
   }
@@ -282,7 +315,7 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
   }
 
   render() {
-    const { isUploading } = this.state;
+    const { isUploading, showSuccessMessage } = this.state;
 
     // TODO: improve design (obviously) and split out components as they grow
     return (
@@ -291,19 +324,22 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
 
         <Box p={4}>
           <Box my={4}>
-            <Header>Dashboard</Header>
-
-            <Box mt={4}>
-              {isUploading ? (
-                <Text p={24}>Uploading...</Text>
-              ) : (
-                this.renderUploadZone()
-              )}
+            <Box>
+              {isUploading
+                ? this.renderUploadPending()
+                : this.renderUploadZone()}
             </Box>
           </Box>
 
           <Box my={4}>{this.renderRecordingsLists()}</Box>
         </Box>
+
+        <Snackbar
+          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+          open={showSuccessMessage}
+          ContentProps={{ 'aria-describedby': 'upload-success-id' }}
+          message={<span id="upload-success-id">Upload successful!</span>}
+        />
       </React.Fragment>
     );
   }

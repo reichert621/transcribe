@@ -1,5 +1,8 @@
+import * as React from 'react';
 import styled from 'styled-components';
 import Paper from '@material-ui/core/Paper';
+import { Link as RouterLink, LinkProps } from 'react-router-dom';
+import MuiLink from '@material-ui/core/Link';
 import {
   space,
   color,
@@ -61,3 +64,20 @@ export const Container = styled(Paper)`
   ${width}
   ${flex}
 `;
+
+// TODO: clean up?
+export const Link = ({ to, children, ...rest }: LinkProps) => {
+  return (
+    <MuiLink
+      component={({ className, children }) => {
+        return (
+          <RouterLink to={to} className={className} {...rest}>
+            {children}
+          </RouterLink>
+        );
+      }}
+    >
+      {children}
+    </MuiLink>
+  );
+};

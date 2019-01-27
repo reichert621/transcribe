@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { RouteComponentProps, Link } from 'react-router-dom';
+import { RouteComponentProps } from 'react-router-dom';
 import { Typography } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
-import { Box, Header, Flex, Container, Text } from './Common';
+import { Box, Header, Flex, Container, Text, Link } from './Common';
 import NavBar from './NavBar';
 import {
   Recording,

@@ -1,13 +1,11 @@
 import * as React from 'react';
-import { RouteComponentProps, Link } from 'react-router-dom';
-import Paper from '@material-ui/core/Paper';
+import { RouteComponentProps } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import Icon from '@material-ui/core/Icon';
 import Typography from '@material-ui/core/Typography';
 import styled from 'styled-components';
 import { login } from '../helpers/auth';
-import { Box, Header, Container } from './Common';
+import { Box, Header, Container, Link } from './Common';
 
 type LoginProps = RouteComponentProps<{}> & {};
 type LoginState = {

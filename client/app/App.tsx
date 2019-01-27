@@ -7,6 +7,8 @@ import {
   Redirect
 } from 'react-router-dom';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import blue from '@material-ui/core/colors/blue';
 import { logout } from './helpers/auth';
 import Register from './components/Register';
 import Login from './components/Login';
@@ -18,6 +20,15 @@ import Profile from './components/Profile';
 import Sandbox from './components/Sandbox';
 import { Box, Button } from './components/Common';
 import './App.less';
+
+const theme = createMuiTheme({
+  palette: {
+    primary: blue
+  },
+  typography: {
+    useNextVariants: true
+  }
+});
 
 type AppProps = {};
 type AppState = {};
@@ -35,7 +46,7 @@ class App extends React.Component<AppProps, AppState> {
 
   render() {
     return (
-      <Box>
+      <MuiThemeProvider theme={theme}>
         <CssBaseline />
         <Router>
           <div className="app">
@@ -53,7 +64,7 @@ class App extends React.Component<AppProps, AppState> {
             </Switch>
           </div>
         </Router>
-      </Box>
+      </MuiThemeProvider>
     );
   }
 }
