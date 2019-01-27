@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { RouteComponentProps, Link } from 'react-router-dom';
-import { Box, Header, Input } from './Common';
+import { Typography } from '@material-ui/core';
+import TextField from '@material-ui/core/TextField';
+import { Box, Header, Flex, Container } from './Common';
 import NavBar from './NavBar';
 import { Recording, fetchRecording } from '../helpers/recordings';
-import { Typography } from '@material-ui/core';
 
 type RecordingProps = RouteComponentProps<{ id: number }> & {};
 type RecordingState = {
@@ -70,39 +71,49 @@ class RecordingPage extends React.Component<RecordingProps, RecordingState> {
         <NavBar />
 
         <Box p={4}>
-          <Header my={4}>{name}</Header>
+          <Typography variant="h4" gutterBottom>
+            {name}
+          </Typography>
 
-          <Box>
-            <Box>Full text: {transcript}</Box>
+          <Flex>
+            <Container my={3} mr={4} p={4} flex={3}>
+              <Typography variant="h5" gutterBottom>
+                Full Text
+              </Typography>
 
-            <Header my={4}>Search</Header>
+              <Box>{transcript}</Box>
+            </Container>
 
-            <Input
-              mb={2}
-              type="text"
-              placeholder="Search"
-              value={query}
-              onChange={(e: React.FormEvent<HTMLInputElement>) =>
-                this.setState({ query: e.currentTarget.value })
-              }
-            />
+            <Container my={3} p={4} flex={2}>
+              <Box mb={4}>
+                <TextField
+                  id="query"
+                  label="Search"
+                  type="text"
+                  fullWidth={true}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    this.setState({ query: e.currentTarget.value })
+                  }
+                />
+              </Box>
 
-            {textByTime
-              .filter(({ text }) => {
-                return (
-                  text &&
-                  text.length &&
-                  text.toLowerCase().includes(query.toLowerCase())
-                );
-              })
-              .map(({ text, startTime }, key) => {
-                return (
-                  <Box key={key}>
-                    {startTime} - {text}
-                  </Box>
-                );
-              })}
-          </Box>
+              {textByTime
+                .filter(({ text }) => {
+                  return (
+                    text &&
+                    text.length &&
+                    text.toLowerCase().includes(query.toLowerCase())
+                  );
+                })
+                .map(({ text, startTime }, key) => {
+                  return (
+                    <Box key={key}>
+                      {startTime} - {text}
+                    </Box>
+                  );
+                })}
+            </Container>
+          </Flex>
         </Box>
       </React.Fragment>
     );

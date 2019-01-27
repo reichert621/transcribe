@@ -59,4 +59,5 @@ export const Button = styled.button`
 export const Container = styled(Paper)`
   ${space}
   ${width}
+  ${flex}
 `;
