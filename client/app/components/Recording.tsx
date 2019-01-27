@@ -2,9 +2,14 @@ import * as React from 'react';
 import { RouteComponentProps, Link } from 'react-router-dom';
 import { Typography } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
-import { Box, Header, Flex, Container } from './Common';
+import { Box, Header, Flex, Container, Text } from './Common';
 import NavBar from './NavBar';
-import { Recording, fetchRecording } from '../helpers/recordings';
+import {
+  Recording,
+  fetchRecording,
+  formatTimestamp,
+  formatFullTranscript
+} from '../helpers/recordings';
 
 type RecordingProps = RouteComponentProps<{ id: number }> & {};
 type RecordingState = {
@@ -75,21 +80,26 @@ class RecordingPage extends React.Component<RecordingProps, RecordingState> {
             {name}
           </Typography>
 
-          <Flex>
-            <Container my={3} mr={4} p={4} flex={3}>
+          <Flex flexDirection={['column', 'row']} mx={-3}>
+            <Container m={3} p={4} flex={3} style={{ minHeight: 400 }}>
               <Typography variant="h5" gutterBottom>
                 Full Text
               </Typography>
 
-              <Box>{transcript}</Box>
+              <Box>
+                {formatFullTranscript(transcript).map((paragraph, idx) => {
+                  return <p key={idx}>{paragraph}</p>;
+                })}
+              </Box>
             </Container>
 
-            <Container my={3} p={4} flex={2}>
+            <Container m={3} p={4} flex={2} style={{ minHeight: 400 }}>
               <Box mb={4}>
                 <TextField
                   id="query"
                   label="Search"
                   type="text"
+                  variant="outlined"
                   fullWidth={true}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     this.setState({ query: e.currentTarget.value })
@@ -105,11 +115,17 @@ class RecordingPage extends React.Component<RecordingProps, RecordingState> {
                     text.toLowerCase().includes(query.toLowerCase())
                   );
                 })
+                .slice(0, 20)
                 .map(({ text, startTime }, key) => {
+                  const ts = formatTimestamp(startTime);
+
                   return (
-                    <Box key={key}>
-                      {startTime} - {text}
-                    </Box>
+                    <Flex key={key}>
+                      <Text fontWeight={500} mr={3}>
+                        {ts}
+                      </Text>
+                      <Text>{text}</Text>
+                    </Flex>
                   );
                 })}
             </Container>

@@ -13,7 +13,11 @@ export type Recording = {
 
 export type Transcription = {
   transcript: string;
-  textByTime: { startTime: number; endTime?: number; text: string }[];
+  textByTime: {
+    startTime: string | number;
+    endTime?: string | number;
+    text: string;
+  }[];
 };
 
 export const formatFileName = (fileName: string) => {
@@ -22,6 +26,50 @@ export const formatFileName = (fileName: string) => {
     .split(' ')
     .filter(str => str && str.length)
     .join('-');
+};
+
+export const formatFullTranscript = (text: string) => {
+  let current: string[] = [];
+  let paragraphs: string[] = [];
+  let count = 0;
+  let sentences = text.split('.');
+
+  for (let sentence of sentences) {
+    const words = count + sentence.length;
+
+    if (words > 250) {
+      const paragraph = current
+        .concat(sentence)
+        .join('.')
+        .concat('.');
+
+      paragraphs.push(paragraph);
+      current = [];
+      count = 0;
+    } else {
+      current.push(sentence);
+      count = words;
+    }
+  }
+
+  if (current.length) {
+    const paragraph = current.join('.');
+
+    paragraphs.push(paragraph);
+  }
+
+  return paragraphs;
+};
+
+export const formatTimestamp = (seconds: string | number) => {
+  const num = Math.floor(Number(seconds));
+  // const hours = // TODO
+  const mins = Math.floor(num / 60);
+  const secs = num % 60;
+  const formattedMins = mins < 10 ? `0${mins}` : `${mins}`;
+  const formattedSecs = secs < 10 ? `0${secs}` : `${secs}`;
+
+  return `${formattedMins}:${formattedSecs}`;
 };
 
 export const fetchRecordings = (): Promise<Recording[]> => {
