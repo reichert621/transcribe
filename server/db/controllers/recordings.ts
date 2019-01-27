@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { first } from 'lodash';
+import { first, omit } from 'lodash';
 import { M, Recording, User } from '../index';
 import {
   AwsTranscription,
@@ -74,7 +74,9 @@ export default {
 
       const recordings = await Recording.fetch({ userId });
 
-      return res.json({ recordings });
+      return res.json({
+        recordings: recordings.map(r => omit(r, 'transcription'))
+      });
     } catch (err) {
       return handleError(res, err);
     }
@@ -84,7 +86,7 @@ export default {
     try {
       const { id: recordingId } = req.params;
       const { id: userId, credits } = req.user;
-      const recording = await Recording.findById(recordingId);
+      const recording = await Recording.findById(recordingId, { userId });
 
       if (recording.paid) {
         console.log('Already paid! Returning recording.');

@@ -90,7 +90,7 @@ class NavBar extends React.Component<NavBarProps, NavBarState> {
                 onClose={this.handleClose}
               >
                 <MenuItem onClick={this.handleClose}>
-                  <NavLink to="/profile">Profile</NavLink>
+                  <NavLink to="/profile">My Account</NavLink>
                 </MenuItem>
                 <MenuItem onClick={this.handleLogout}>
                   <NavLink to="/login">Logout</NavLink>

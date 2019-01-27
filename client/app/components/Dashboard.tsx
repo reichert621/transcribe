@@ -158,9 +158,9 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
   }
 
   viewRecordingDetails = (recording: Recording) => {
-    const { id, transcription } = recording;
+    const { id, status } = recording;
 
-    if (!transcription) {
+    if (status !== 'COMPLETED') {
       return null;
     }
 
