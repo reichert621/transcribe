@@ -157,6 +157,19 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
     }
   }
 
+  getColorByStatus(status: TranscriptionStatus) {
+    switch (status) {
+      case 'COMPLETED':
+        return '#2196f3';
+      case 'IN_PROGRESS':
+        return '#bdbdbd';
+      case 'FAILED':
+        return '#f44336';
+      default:
+        throw new Error(`Invalid status: ${status}`);
+    }
+  }
+
   viewRecordingDetails = (recording: Recording) => {
     const { id, status } = recording;
 
@@ -188,8 +201,9 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
     }
 
     return recordings.map((recording, key) => {
-      const { id, name, status, timestamp, transcription } = recording;
+      const { id, name, status, timestamp } = recording;
       const ts = moment(timestamp).format('MMM DD, h:mm a');
+      const bg = this.getColorByStatus(status);
 
       return (
         <ListItem
@@ -198,7 +212,9 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
           onClick={() => this.viewRecordingDetails(recording)}
         >
           <ListItemAvatar>
-            <Avatar>{this.getIconByStatus(status)}</Avatar>
+            <Avatar style={{ backgroundColor: bg }}>
+              {this.getIconByStatus(status)}
+            </Avatar>
           </ListItemAvatar>
           <ListItemText
             primary={name}
