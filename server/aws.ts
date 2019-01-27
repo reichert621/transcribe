@@ -153,7 +153,13 @@ export function getTranscription(fileName: string) {
   //   });
 }
 
-export function sign(filename: string, contentType: string) {
+type AwsOperation = 'getObject' | 'putObject';
+
+export function sign(
+  filename: string,
+  contentType: string,
+  operation: AwsOperation = 'putObject'
+) {
   const params = {
     Bucket: bucketName,
     Key: filename,
@@ -162,7 +168,7 @@ export function sign(filename: string, contentType: string) {
   };
 
   return new Bluebird((resolve, reject) => {
-    s3.getSignedUrl('putObject', params, (err, data) => {
+    s3.getSignedUrl(operation, params, (err, data) => {
       if (err) {
         reject(err);
       } else {
@@ -177,8 +183,28 @@ export function sign(filename: string, contentType: string) {
   //   .promise()
 }
 
+export const getSignedDownloadUrl = (filename: string) => {
+  const params = { Bucket: bucketName, Key: filename, Expires: 3600 };
+
+  return new Bluebird((resolve, reject) => {
+    s3.getSignedUrl('getObject', params, (err, data) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(data);
+      }
+    });
+  });
+
+  // TODO: promisify!
+  // return s3
+  //   .getSignedUrl('getObject', params)
+  //   .promise()
+};
+
 export default {
   sign,
+  getSignedDownloadUrl,
   listTranscriptionJobs,
   startTranscription,
   getTranscription,

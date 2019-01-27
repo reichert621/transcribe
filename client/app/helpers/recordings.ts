@@ -86,6 +86,13 @@ export const getSignedUrl = (
     .then(res => res.body.signedUrl);
 };
 
+export const getSignedDownloadUrl = (fileName: string): Promise<any> => {
+  return request
+    .get('/api/signed-download-url')
+    .query({ fileName })
+    .then(res => res.body.signedUrl);
+};
+
 export const uploadToS3 = (s3Url: string, file: File) => {
   return request
     .put(s3Url)

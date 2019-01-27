@@ -4,7 +4,6 @@ import Paper from '@material-ui/core/Paper';
 import Button, { ButtonProps } from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Tooltip from '@material-ui/core/Tooltip';
-import Icon from '@material-ui/core/Icon';
 import Typography from '@material-ui/core/Typography';
 import styled from 'styled-components';
 import { fetchAudioUrl } from '../helpers/ny';
@@ -40,27 +39,29 @@ type AudioPlayerState = {
   playbackRate?: number;
 };
 
-class AudioPlayer extends React.Component<AudioPlayerProps, AudioPlayerState> {
-  input: HTMLInputElement;
+type AudioProps = {
+  audioUrl: string;
+};
+type AudioState = {
+  playbackRate: number;
+};
+
+export class Audio extends React.Component<AudioProps, AudioState> {
   audio: HTMLAudioElement;
 
-  constructor(props: AudioPlayerProps) {
+  constructor(props: AudioProps) {
     super(props);
 
     this.state = {
-      articleUrl: '',
-      audioUrl: '',
       playbackRate: 1
     };
   }
 
   componentDidMount() {
-    // TODO
     document.addEventListener('keydown', this.setupKeyboardShortcuts);
   }
 
   componentWillUnmount() {
-    // TODO
     document.removeEventListener('keydown', this.setupKeyboardShortcuts);
   }
 
@@ -92,21 +93,6 @@ class AudioPlayer extends React.Component<AudioPlayerProps, AudioPlayerState> {
       case 'ArrowUp':
         return this.handleIncTime(30);
     }
-  };
-
-  handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const { articleUrl } = this.state;
-
-    return fetchAudioUrl(articleUrl)
-      .then(url => {
-        this.input.blur();
-        this.setState({ audioUrl: url });
-      })
-      .catch(err => {
-        console.log('Error getting url!', err);
-      });
   };
 
   handlePlayAudio = () => {
@@ -277,8 +263,8 @@ class AudioPlayer extends React.Component<AudioPlayerProps, AudioPlayerState> {
     );
   }
 
-  renderAudioPlayer() {
-    const { audioUrl } = this.state;
+  render() {
+    const { audioUrl } = this.props;
 
     return (
       <Box mt={4}>
@@ -299,8 +285,40 @@ class AudioPlayer extends React.Component<AudioPlayerProps, AudioPlayerState> {
       </Box>
     );
   }
+}
+
+class AudioPlayer extends React.Component<AudioPlayerProps, AudioPlayerState> {
+  input: HTMLInputElement;
+  audio: HTMLAudioElement;
+
+  constructor(props: AudioPlayerProps) {
+    super(props);
+
+    this.state = {
+      articleUrl: '',
+      audioUrl: '',
+      playbackRate: 1
+    };
+  }
+
+  handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const { articleUrl } = this.state;
+
+    return fetchAudioUrl(articleUrl)
+      .then(url => {
+        this.input.blur();
+        this.setState({ audioUrl: url });
+      })
+      .catch(err => {
+        console.log('Error getting url!', err);
+      });
+  };
 
   render() {
+    const { audioUrl } = this.state;
+
     return (
       <Box p={4}>
         <Container>
@@ -325,7 +343,7 @@ class AudioPlayer extends React.Component<AudioPlayerProps, AudioPlayerState> {
             </Box>
           </form>
 
-          {this.renderAudioPlayer()}
+          <Audio audioUrl={audioUrl} />
         </Container>
       </Box>
     );

@@ -109,6 +109,7 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
     const { name = '', type: contentType } = file;
     const formatted = formatFileName(name);
     const fileName = `${+new Date()}-${formatted}`;
+    console.log({ fileName, contentType });
 
     return getSignedUrl(fileName, contentType)
       .then(url => {
