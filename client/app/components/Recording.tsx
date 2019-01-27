@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, Link } from 'react-router-dom';
 import { Box, Header, Input } from './Common';
 import NavBar from './NavBar';
 import { Recording, fetchRecording } from '../helpers/recordings';
+import { Typography } from '@material-ui/core';
 
 type RecordingProps = RouteComponentProps<{ id: number }> & {};
 type RecordingState = {
@@ -36,10 +37,33 @@ class RecordingPage extends React.Component<RecordingProps, RecordingState> {
 
     if (!recording) {
       // TODO: render loading
-      return null;
+      return <NavBar />;
     }
 
-    const { name, transcription } = recording;
+    const { name, transcription, paid } = recording;
+
+    if (!paid) {
+      return (
+        <React.Fragment>
+          <NavBar />
+
+          <Box p={4}>
+            <Header my={4}>{name}</Header>
+
+            <Box mt={4}>
+              <Typography variant="body1" gutterBottom>
+                Please purchase more credits to view transcription.
+              </Typography>
+
+              <Typography variant="body1" gutterBottom>
+                Credits can be purchased <Link to="/profile">here</Link>.
+              </Typography>
+            </Box>
+          </Box>
+        </React.Fragment>
+      );
+    }
+
     const { transcript, textByTime = [] } = transcription;
 
     return (

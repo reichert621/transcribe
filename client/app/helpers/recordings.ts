@@ -8,6 +8,7 @@ export type Recording = {
   status?: TranscriptionStatus;
   timestamp?: any;
   transcription?: Transcription;
+  paid?: boolean;
 };
 
 export type Transcription = {
