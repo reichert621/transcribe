@@ -7,11 +7,12 @@ import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
-import { logout } from '../helpers/auth';
-import { Box } from './Common';
+import { logout, fetchCurrentUser, User } from '../helpers/auth';
+import { Flex } from './Common';
 
 type NavBarProps = {};
 type NavBarState = {
+  user: User;
   anchorEl: any;
 };
 
@@ -20,9 +21,24 @@ class NavBar extends React.Component<NavBarProps, NavBarState> {
     super(props);
 
     this.state = {
+      user: null,
       anchorEl: null
     };
   }
+
+  componentDidMount() {
+    return this.fetchCurrentUser();
+  }
+
+  fetchCurrentUser = () => {
+    return fetchCurrentUser()
+      .then(({ user }) => {
+        this.setState({ user });
+      })
+      .catch(err => {
+        console.log('Error fetching current user!', err);
+      });
+  };
 
   handleMenu = (e: React.SyntheticEvent<{}>) => {
     this.setState({ anchorEl: e.currentTarget });
@@ -39,7 +55,7 @@ class NavBar extends React.Component<NavBarProps, NavBarState> {
   };
 
   render() {
-    const { anchorEl } = this.state;
+    const { anchorEl, user } = this.state;
     const open = Boolean(anchorEl);
 
     return (
@@ -51,7 +67,12 @@ class NavBar extends React.Component<NavBarProps, NavBarState> {
                 Transcriptions
               </NavLink>
             </Typography>
-            <div>
+            <Flex alignItems="center">
+              {user && user.credits && (
+                <Typography style={{ color: 'white', marginRight: 16 }}>
+                  Credits available: {user.credits}
+                </Typography>
+              )}
               <IconButton
                 aria-owns={open ? 'menu-appbar' : undefined}
                 aria-haspopup="true"
@@ -75,7 +96,7 @@ class NavBar extends React.Component<NavBarProps, NavBarState> {
                   <NavLink to="/login">Logout</NavLink>
                 </MenuItem>
               </Menu>
-            </div>
+            </Flex>
           </Toolbar>
         </AppBar>
       </div>
