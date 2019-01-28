@@ -15,6 +15,12 @@ const Container = styled(Paper)`
   max-width: 1080px;
 `;
 
+const AudioControlsContainer = styled(Flex)`
+  @media (max-width: 700px) {
+    display: none;
+  }
+`;
+
 const AudioControlButton = (props: ButtonProps) => {
   const { children, style, onClick, ...rest } = props;
 
@@ -278,10 +284,10 @@ export class Audio extends React.Component<AudioProps, AudioState> {
           }}
         />
 
-        <Flex flexDirection={['column', 'column', 'row']}>
+        <AudioControlsContainer flexDirection={['column', 'column', 'row']}>
           {this.renderAudioSpeedControls()}
           {this.renderAudioTimeControls()}
-        </Flex>
+        </AudioControlsContainer>
       </Box>
     );
   }

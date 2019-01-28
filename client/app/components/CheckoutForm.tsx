@@ -113,8 +113,8 @@ class CheckoutForm extends React.Component<
       <Box width={[1, 3 / 4, 1 / 2]} maxWidth="400px">
         {/* <StripeCheckout token={this.onToken} stripeKey={STRIPE_KEY} /> */}
 
-        <Flex>
-          <Box style={{ minWidth: 400, paddingTop: 14 }} mr={4}>
+        <Flex flexDirection={['column', 'column', 'row']}>
+          <Box style={{ minWidth: 240, paddingTop: 14 }} mr={[0, 0, 4]}>
             <CardElement
               style={style}
               onReady={ref => (this.element = ref)}
@@ -150,7 +150,7 @@ class CheckoutForm extends React.Component<
         {/* <CardCVCElement style={style} /> */}
         {/* <PostalCodeElement style={style} /> */}
 
-        <Box my={3}>
+        <Box my={[4, 4, 3]}>
           <Button
             variant="contained"
             color="primary"

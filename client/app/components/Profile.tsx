@@ -54,20 +54,6 @@ class Profile extends React.Component<ProfileProps, ProfileState> {
     });
   };
 
-  renderProductOption(product: Product) {
-    const { tier, credits, price } = product;
-
-    return (
-      <Container key={tier} p={3}>
-        <Typography variant="h4" gutterBottom>
-          Tier #{tier}
-        </Typography>
-        <Typography variant="h5">{credits} credits</Typography>
-        <Typography variant="h6">{price}</Typography>
-      </Container>
-    );
-  }
-
   render() {
     const { user, showSuccessMessage } = this.state;
 
