@@ -47,6 +47,7 @@ type AudioPlayerState = {
 
 type AudioProps = {
   audioUrl: string;
+  currentTime?: number;
 };
 type AudioState = {
   playbackRate: number;
@@ -69,6 +70,12 @@ export class Audio extends React.Component<AudioProps, AudioState> {
 
   componentWillUnmount() {
     document.removeEventListener('keydown', this.setupKeyboardShortcuts);
+  }
+
+  componentDidUpdate(prevProps: AudioProps) {
+    if (this.props.currentTime !== prevProps.currentTime) {
+      this.setCurrentTime(this.props.currentTime);
+    }
   }
 
   setupKeyboardShortcuts = (e: KeyboardEvent) => {
@@ -133,6 +140,14 @@ export class Audio extends React.Component<AudioProps, AudioState> {
 
       this.setState({ playbackRate: rate });
       this.audio.playbackRate = rate;
+    }
+  };
+
+  setCurrentTime = (n: number) => {
+    const duration = this.audio && this.audio.duration;
+
+    if (duration && n >= 0 && n < duration) {
+      this.audio.currentTime = n;
     }
   };
 

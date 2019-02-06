@@ -18,13 +18,19 @@ type RecordingState = {
   recording: Recording;
   query?: string;
   url?: string;
+  timestamp?: number;
 };
 
 class RecordingPage extends React.Component<RecordingProps, RecordingState> {
   constructor(props: RecordingProps) {
     super(props);
 
-    this.state = { recording: null, query: '', url: null };
+    this.state = {
+      recording: null,
+      query: '',
+      url: null,
+      timestamp: null
+    };
   }
 
   async componentDidMount() {
@@ -34,6 +40,7 @@ class RecordingPage extends React.Component<RecordingProps, RecordingState> {
       const { name: fileName } = recording;
       // TODO: only get this url if the recording has been paid for
       const url = await getSignedDownloadUrl(fileName);
+      console.log('Audio url:', url);
 
       this.setState({ recording, url });
     } catch (err) {
@@ -42,8 +49,7 @@ class RecordingPage extends React.Component<RecordingProps, RecordingState> {
   }
 
   render() {
-    const { recording, query, url } = this.state;
-    console.log('Url!!!', url);
+    const { recording, query, url, timestamp } = this.state;
 
     if (!recording) {
       // TODO: render loading
@@ -87,7 +93,7 @@ class RecordingPage extends React.Component<RecordingProps, RecordingState> {
 
           {url && (
             <Container p={4} my={3}>
-              <Audio audioUrl={url} />
+              <Audio audioUrl={url} currentTime={timestamp} />
             </Container>
           )}
 
@@ -135,7 +141,14 @@ class RecordingPage extends React.Component<RecordingProps, RecordingState> {
                   return (
                     <Flex key={key}>
                       <Text fontWeight={500} mr={3}>
-                        {ts}
+                        <Link
+                          to="#"
+                          onClick={() =>
+                            this.setState({ timestamp: Number(startTime) })
+                          }
+                        >
+                          {ts}
+                        </Link>
                       </Text>
                       <Text>{text}</Text>
                     </Flex>
