@@ -73,8 +73,11 @@ export class Audio extends React.Component<AudioProps, AudioState> {
   }
 
   componentDidUpdate(prevProps: AudioProps) {
-    if (this.props.currentTime !== prevProps.currentTime) {
-      this.setCurrentTime(this.props.currentTime);
+    const currentTime = this.audio && this.audio.currentTime;
+    const { currentTime: updatedTime } = this.props;
+
+    if (currentTime && updatedTime && updatedTime !== currentTime) {
+      this.setCurrentTime(updatedTime);
     }
   }
 
