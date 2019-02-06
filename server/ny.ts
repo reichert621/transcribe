@@ -67,14 +67,22 @@ export const fetchAudioUrl = url => {
         .filter((i, el) => !!$(el).attr('src'))
         .first()
         .attr('src');
-      console.log('Found:', audio);
 
-      // TODO: check elements for href/src attributes containing audio file
-      // const arr = Array.from(document.getElementsByTagName('a'))
-      //   .map(a => a.href)
-      //   .filter(href => href.includes('mp3'));
+      const video = $('video')
+        .filter((i, el) => !!$(el).attr('src'))
+        .first()
+        .attr('src');
 
-      return audio;
+      const link = $('a')
+        .filter((i, el) => {
+          const href = $(el).attr('href');
+
+          return href && href.includes('mp3');
+        })
+        .first()
+        .attr('href');
+
+      return audio || video || link || null;
     } else {
       // Only handle audio and html files for now
       return null;
