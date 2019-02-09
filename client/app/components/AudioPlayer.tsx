@@ -102,7 +102,7 @@ export class Audio extends React.Component<AudioProps, AudioState> {
   };
 
   setupTimeUpdateListener = () => {
-    this.props.onTimeUpdate(this.audio.currentTime);
+    this.props.onTimeUpdate && this.props.onTimeUpdate(this.audio.currentTime);
   };
 
   setupKeyboardShortcuts = (e: KeyboardEvent) => {
