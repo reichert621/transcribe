@@ -56,7 +56,7 @@ class RecordingPage extends React.Component<RecordingProps, RecordingState> {
   }
 
   handleTimeUpdate = (ts: number) => {
-    this.setState({ currentTime: ts });
+    this.setState({ currentTime: ts, timestamp: null });
   };
 
   // This allows us to highlight the text that is currently being played
@@ -70,7 +70,13 @@ class RecordingPage extends React.Component<RecordingProps, RecordingState> {
 
       return (
         <span key={startTime}>
-          <span style={{ background: isCurrent ? HIGHLIGHT : 'transparent' }}>
+          <span
+            style={{
+              cursor: 'pointer',
+              background: isCurrent ? HIGHLIGHT : 'transparent'
+            }}
+            onClick={() => this.setState({ timestamp: start })}
+          >
             {text}
           </span>{' '}
         </span>
@@ -182,18 +188,15 @@ class RecordingPage extends React.Component<RecordingProps, RecordingState> {
                     currentTime && currentTime > start && currentTime < end;
 
                   return (
-                    <Flex key={key}>
-                      <Text fontWeight={500} mr={3}>
-                        <Link
-                          to="#"
-                          onClick={() =>
-                            this.setState({
-                              timestamp: Number(startTime)
-                            })
-                          }
-                        >
-                          {ts}
-                        </Link>
+                    <Flex
+                      key={key}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() =>
+                        this.setState({ timestamp: Number(startTime) })
+                      }
+                    >
+                      <Text fontWeight={500} mr={3} color={blue[500]}>
+                        {ts}
                       </Text>
                       <Text
                         style={{
