@@ -48,6 +48,7 @@ type AudioPlayerState = {
 type AudioProps = {
   audioUrl: string;
   currentTime?: number;
+  onTimeUpdate?: (ts: number) => void;
 };
 type AudioState = {
   playbackRate: number;
@@ -59,9 +60,7 @@ export class Audio extends React.Component<AudioProps, AudioState> {
   constructor(props: AudioProps) {
     super(props);
 
-    this.state = {
-      playbackRate: 1
-    };
+    this.state = { playbackRate: 1 };
   }
 
   componentDidMount() {
@@ -70,6 +69,13 @@ export class Audio extends React.Component<AudioProps, AudioState> {
 
   componentWillUnmount() {
     document.removeEventListener('keydown', this.setupKeyboardShortcuts);
+
+    if (this.audio) {
+      this.audio.removeEventListener(
+        'timeupdate',
+        this.setupTimeUpdateListener
+      );
+    }
   }
 
   componentDidUpdate(prevProps: AudioProps) {
@@ -86,6 +92,18 @@ export class Audio extends React.Component<AudioProps, AudioState> {
       this.setCurrentTime(updatedTime);
     }
   }
+
+  setupAudio = (audio: HTMLAudioElement) => {
+    this.audio = audio;
+
+    if (this.audio) {
+      this.audio.addEventListener('timeupdate', this.setupTimeUpdateListener);
+    }
+  };
+
+  setupTimeUpdateListener = () => {
+    this.props.onTimeUpdate(this.audio.currentTime);
+  };
 
   setupKeyboardShortcuts = (e: KeyboardEvent) => {
     switch (e.key) {
@@ -303,9 +321,7 @@ export class Audio extends React.Component<AudioProps, AudioState> {
           src={audioUrl}
           controls
           style={{ width: '100%', marginBottom: 8 }}
-          ref={audio => {
-            this.audio = audio;
-          }}
+          ref={this.setupAudio}
         />
 
         <AudioControlsContainer flexDirection={['column', 'column', 'row']}>

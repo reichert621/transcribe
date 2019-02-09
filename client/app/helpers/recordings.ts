@@ -11,13 +11,15 @@ export type Recording = {
   paid?: boolean;
 };
 
+export type TextByTime = {
+  startTime: string | number;
+  endTime?: string | number;
+  text: string;
+};
+
 export type Transcription = {
   transcript: string;
-  textByTime: {
-    startTime: string | number;
-    endTime?: string | number;
-    text: string;
-  }[];
+  textByTime: TextByTime[];
 };
 
 export const formatFileName = (fileName: string) => {

@@ -2,16 +2,20 @@ import * as React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { Typography } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
+import blue from '@material-ui/core/colors/blue';
 import { Box, Header, Flex, Container, Text, Link } from './Common';
 import NavBar from './NavBar';
 import { Audio } from './AudioPlayer';
 import {
   Recording,
+  TextByTime,
   fetchRecording,
   formatTimestamp,
   formatFullTranscript,
   getSignedDownloadUrl
 } from '../helpers/recordings';
+
+const HIGHLIGHT = blue[50];
 
 type RecordingProps = RouteComponentProps<{ id: number }> & {};
 type RecordingState = {
@@ -19,6 +23,7 @@ type RecordingState = {
   query?: string;
   url?: string;
   timestamp?: number;
+  currentTime?: number;
 };
 
 class RecordingPage extends React.Component<RecordingProps, RecordingState> {
@@ -29,7 +34,9 @@ class RecordingPage extends React.Component<RecordingProps, RecordingState> {
       recording: null,
       query: '',
       url: null,
-      timestamp: null
+      // TODO: distinguish between `timestamp` and `currentTime` more clearly
+      timestamp: null,
+      currentTime: null
     };
   }
 
@@ -48,8 +55,31 @@ class RecordingPage extends React.Component<RecordingProps, RecordingState> {
     }
   }
 
+  handleTimeUpdate = (ts: number) => {
+    this.setState({ currentTime: ts });
+  };
+
+  // This allows us to highlight the text that is currently being played
+  renderFullTranscription = (textByTime: TextByTime[]) => {
+    const { currentTime } = this.state;
+
+    return textByTime.map(({ text, startTime, endTime }) => {
+      const start = Number(startTime);
+      const end = Number(endTime);
+      const isCurrent = currentTime && currentTime > start && currentTime < end;
+
+      return (
+        <span key={startTime}>
+          <span style={{ background: isCurrent ? HIGHLIGHT : 'transparent' }}>
+            {text}
+          </span>{' '}
+        </span>
+      );
+    });
+  };
+
   render() {
-    const { recording, query, url, timestamp } = this.state;
+    const { recording, query, url, timestamp, currentTime } = this.state;
 
     if (!recording) {
       // TODO: render loading
@@ -93,7 +123,11 @@ class RecordingPage extends React.Component<RecordingProps, RecordingState> {
 
           {url && (
             <Container p={4} my={3}>
-              <Audio audioUrl={url} currentTime={timestamp} />
+              <Audio
+                audioUrl={url}
+                currentTime={timestamp}
+                onTimeUpdate={this.handleTimeUpdate}
+              />
             </Container>
           )}
 
@@ -104,9 +138,14 @@ class RecordingPage extends React.Component<RecordingProps, RecordingState> {
               </Typography>
 
               <Box>
+                {/*
+                TODO: figure out how to format long text into paragraphs
+
                 {formatFullTranscript(transcript).map((paragraph, idx) => {
                   return <p key={idx}>{paragraph}</p>;
                 })}
+                */}
+                {this.renderFullTranscription(textByTime)}
               </Box>
             </Container>
 
@@ -135,8 +174,12 @@ class RecordingPage extends React.Component<RecordingProps, RecordingState> {
                   );
                 })
                 .slice(0, 20)
-                .map(({ text, startTime }, key) => {
+                .map(({ text, startTime, endTime }, key) => {
                   const ts = formatTimestamp(startTime);
+                  const start = Number(startTime);
+                  const end = Number(endTime);
+                  const isCurrent =
+                    currentTime && currentTime > start && currentTime < end;
 
                   return (
                     <Flex key={key}>
@@ -144,13 +187,21 @@ class RecordingPage extends React.Component<RecordingProps, RecordingState> {
                         <Link
                           to="#"
                           onClick={() =>
-                            this.setState({ timestamp: Number(startTime) })
+                            this.setState({
+                              timestamp: Number(startTime)
+                            })
                           }
                         >
                           {ts}
                         </Link>
                       </Text>
-                      <Text>{text}</Text>
+                      <Text
+                        style={{
+                          background: isCurrent ? HIGHLIGHT : 'transparent'
+                        }}
+                      >
+                        {text}
+                      </Text>
                     </Flex>
                   );
                 })}
