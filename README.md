@@ -1,3 +1,9 @@
+# Preview
+
+Upload audio files and have them instantly transcribed and searchable:
+
+<img width="1368" alt="Screen Shot 2020-02-22 at 7 53 52 PM" src="https://user-images.githubusercontent.com/5264279/75101616-24017580-55ad-11ea-9643-ca019d7ad293.png">
+
 # Getting started
 
 ### Install dependencies
